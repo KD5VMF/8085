@@ -1,96 +1,74 @@
 
-# FigTroniX 8085 RealTime Clock 2024 VER 4
+# FigTroniX 80C85 RealTime Clock 2024 VER 3
 
-## Project Overview
+## Code Overview
 
-This project is a real-time clock using the 8085 microprocessor, interfaced with two HDLG-2416 alphanumeric LED displays to show the current time. The time is displayed in hours, minutes, and seconds, and it scrolls from right to left across both displays. The clock can be configured to display time in either decimal or hexadecimal format, and buttons are used to adjust the hours and minutes.
+This program implements a real-time clock using the 80C85 microprocessor. The time is displayed across two HDLG-2416 alphanumeric LED displays. The left display begins at address `80H`, and the right display begins at `C0H`. The time is shown in the format `HH:MM:SS`, with colons that toggle on and off every second. The program also allows for adjusting the hour and minute values via button inputs.
 
-## Features
+### Initialization
 
-- **Real-Time Clock:** Displays hours, minutes, and seconds on two HDLG-2416 alphanumeric displays.
-- **Scrolling Display:** The time scrolls from the right display to the left and then blanks before repeating.
-- **Switchable Display Format:** The clock can display time in either decimal or hexadecimal format.
-- **Button Input:** Two buttons are used to increment hours and minutes, with an added RC circuit for debounce to ensure smooth operation.
-- **Colon Blinking:** The colon between hours and minutes blinks every second.
-- **Automatic Time Updating:** The clock updates its internal RAM storage of time, preventing errors during button presses.
+The clock is initialized by setting the appropriate memory locations and configuring the 8155 I/O chip.
 
-## Hardware
+```basic
+Poke $fff8, $00  'iniz clock
+Poke $fff9, $00  'iniz clock
+Poke $fffc, $00  'iniz clock
+Poke $fffd, $00  'iniz clock
+Poke $fffe, $00  'iniz clock
+Put $40, $42  'iniz 8155 PORT A = INPUT, PORT B = OUTPUT, PORT C = INPUT
+Put $42, $00  'clear led 8155
+Put $81, $3a  'place : for clock
+Put $c2, $3a  'place : for clock
+```
 
-- **Microprocessor:** 8085
-- **Display:** 2 x HDLG-2416 alphanumeric LED displays
-  - Left display: starts at address 80H
-  - Right display: starts at address C0H
-- **Button Input:** 2 buttons (hour and minute adjust)
-- **Debounce Circuit:** RC circuit added to buttons to prevent bouncing.
+### Main Loop and Display
 
-## Memory Mapping
+The main clock loop reads time from memory, converts BCD values to binary, and outputs them to the LED displays. Colons between the hours, minutes, and seconds toggle on and off to create a blinking effect.
 
-- **Display Addressing:**
-  - Left Display (4 characters): Address range 80H - 83H
-  - Right Display (4 characters): Address range C0H - C3H
-- **Time Storage:**
-  - Time in ASCII: $C000
-  - Time in Binary: $B000
+The scrolling feature is implemented, starting from the right display and moving to the left, then clearing the displays before repeating.
 
-## Code Highlights
+### Time Adjustment
 
-The clock is programmed to toggle between displaying time in decimal and hexadecimal formats, and it handles binary-coded decimal (BCD) conversions. Here are some key parts of the code:
+Two buttons are used to adjust the hour and minute values. Button debounce is handled via an RC circuit. The buttons are connected to `PC0` and `PC1` of the 8155 I/O chip.
 
-- **BCD to Binary Conversion:**
-  ```assembly
-  ASM:BCDBIN:
-  ASM:        PUSH B      'SAVE BC REG
-  ASM:        PUSH D      'SAVE DE REG
-  ASM:        MOV B,A     'SAVE BCD
-  ASM:        ANI 0FH     'MASK LEAST SIGNIFICANT FOUR BITS
-  ASM:        MOV C,A     'SAVE UNPACKED BCD IN C REG
-  ASM:        MOV A,B     'GET BCD AGAIN
-  ASM:        ANI F0H     'MASK MOST SIGNIFICANT FOUR BITS
-  ASM:        RRC         'SHIFT FOUR TIMES TO GET UPPER NIBBLE
-  ASM:        RRC
-  ASM:        RRC
-  ASM:        RRC
-  ASM:        MOV D,A     'SAVE UPPER NIBBLE
-  ASM:        MVI E,10    'SET E AS MULTIPLIER OF 10
-  ASM:SUM:
-  ASM:        DCR D       'DECREMENT D
-  ASM:        JZ SUM_END  'IF D=0, EXIT LOOP
-  ASM:        ADD E       'ADD 10 TO A
-  ASM:        JMP SUM     'REPEAT LOOP
-  ASM:SUM_END:
-  ASM:        ADD C       'ADD LOWER NIBBLE
-  ASM:        POP D       'RETRIEVE PREVIOUS CONTENTS
-  ASM:        POP B
-  ASM:        RET         'RETURN
-  ```
+### Binary-to-ASCII Conversion
 
-- **Scrolling Time Display:** 
-  The code scrolls the time from the right display to the left, with proper addressing of each character slot on the HDLG-2416 displays.
+The BCD-to-ASCII conversion is handled via the following subroutine:
 
-## Schematic and Gerber Files
+```assembly
+ASM:BINASCII:
+ASM:        LXI D,timeascii  'POINT INDEX TO WHERE ASCII CODE IS TO BE STORED
+ASM:        MOV A,M          'GET BYTE
+ASM:        MOV B,A          'SAVE BYTE
+ASM:        RRC              'ROTATE FOUR TIMES TO PLACE THE FOUR HIGH ORDER BITS OF THE SELECTED BYTE IN THE LOW ORDER LOCATION
+ASM:        RRC
+ASM:        RRC
+ASM:        RRC
+ASM:        CALL ASCII       'CALL ASCII CONVERSION
+ASM:        STAX D           'SAVE FIRST ASCII HEX
+ASM:        INX D            'POINT TO NEXT MEMORY LOCATION
+ASM:        MOV A,B          'GET BYTE
+ASM:        CALL ASCII       'CALL ASCII CONVERSION
+ASM:        STAX D           'SAVE NEXT ASCII HEX
+ASM:        RET              'RETURN
+```
 
-Please refer to the included schematic and Gerber files for the complete hardware design. These files detail the connections between the 8085, the HDLG-2416 displays, the buttons, and the supporting components like the debounce RC circuits.
+### Hardware Requirements
 
-## Usage Instructions
+- 8085 Microprocessor
+- 8155 I/O Chip
+- Two HDLG-2416 Alphanumeric LED Displays
 
-1. Power on the system and the real-time clock will start automatically.
-2. To adjust the time:
-   - Press the **hour button** to increment the hours.
-   - Press the **minute button** to increment the minutes.
-3. The time will scroll continuously from the right display to the left.
-4. Switch between decimal and hexadecimal display using the designated input switch.
+## Scrolling Feature
 
-## Future Improvements
+The time scrolls from the right display to the left display in a loop, then clears and repeats. This is achieved by writing to the appropriate memory locations for the displays, starting with the right display (`C0H`), followed by the left (`80H`).
 
-- **Improved Scrolling Speed:** Adjust the delay between display updates for smoother scrolling.
-- **Custom Character Display:** Add support for custom characters or animations on the LED displays.
-- **Time Syncing:** Integrate an external time source for automatic synchronization.
+## Usage
+
+- **Hour Button:** Connected to `PC0` of 8155.
+- **Minute Button:** Connected to `PC1` of 8155.
+- **Scrolling:** The time will scroll from the right display to the left, showing the current time.
 
 ## License
 
-This project is open-source and licensed under the MIT License.
-
-## Credits
-
-- Designed by FigTroniX
-- 2024 Version 3, incorporating improved scrolling and RC debounce circuits.
+Open to use and modify for personal or educational purposes.
