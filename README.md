@@ -83,6 +83,7 @@ The main loop in the code continually checks the seconds value from the RTC, and
 - **Source Code**: Assembly and BASIC files for the 8085 CPU and RTC interface.
 - **Schematic**: Mini (Ver 4 2024) Schematic for the hardware layout.
 - **README.md**: This file provides detailed information on hardware and software functionality.
+- Gerber Files
 
 ## Conclusion
 
