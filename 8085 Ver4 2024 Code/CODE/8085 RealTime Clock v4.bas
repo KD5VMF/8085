@@ -1,4 +1,4 @@
-'FigTroniX 80C85 RealTime Clock 2024 VER 3
+'FigTroniX 8085 RealTime Clock 2024 VER 4
 
 ' Initialize clock
 Poke $fff8, $00  'iniz clock
