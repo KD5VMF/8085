@@ -1,94 +1,89 @@
 
-# FigTroniX 8085 RealTime Clock (2024 Ver 4)
+# FigTroniX 80C85 RealTime Clock 2024 VER 3
 
 ## Overview
-The **FigTroniX 8085 RealTime Clock 2024 Ver 4** is a hardware and software implementation of a real-time clock system built around the 8085 microprocessor and an M48T02-70PC1 Real-Time Clock module. This project is designed to work with HDLG-2416 alphanumeric LED displays connected via an Intel 8155 I/O chip.
 
-The clock keeps time in both hexadecimal and decimal formats, and users can interact with the system to modify hours and minutes via buttons connected to the system. The real-time clock data is maintained even when power is off using the M48T02-70PC1 RTC module, which includes battery-backed RAM.
+This project, **FigTroniX 80C85 RealTime Clock (2024 VER 3)**, is designed to work with an Intel 80C85 microprocessor-based system. It includes a RealTime Clock (RTC) using the M48T02-70PC1, an STMicroelectronics Timekeeper, for timekeeping and utilizes dual HDLG-2416 alphanumeric LED displays. The purpose of this system is to maintain and display the current time in BCD format, allowing user input via buttons to adjust the time, all while operating through assembly and BASIC code.
 
 ## Hardware Components
 
-### 1. **8085 Microprocessor**
-   - The **8085** is an 8-bit microprocessor used to handle the main operations of this clock. It executes the assembly instructions that control the timing, display, and user interactions.
+### Core Processor
+- **Intel 80C85 Microprocessor**: A classic 8-bit CPU used for controlling the real-time clock and managing data in the system.
 
-### 2. **M48T02-70PC1 Real-Time Clock**
-   - The **M48T02-70PC1** module provides real-time clock (RTC) functionality with built-in battery backup. This ensures that the clock maintains accurate time even when the system is powered off.
+### RTC
+- **M48T02-70PC1 RealTime Clock (RTC)**: A 2K x 8 non-volatile static RAM and Timekeeper, capable of maintaining accurate timekeeping, even with power off, thanks to an embedded lithium energy source. This RTC stores seconds, minutes, and hours in BCD format, supporting real-time clock operations for long-term timekeeping.
 
-### 3. **HDLG-2416 Alphanumeric LED Displays**
-   - The **HDLG-2416** is a 4-digit alphanumeric LED display used to show the hours, minutes, and seconds. The project uses two of these displays to show time in a human-readable format.
-   - The left display is mapped to the address `$80H` and the right display is mapped to `$C0H`.
+### Memory & I/O
+- **8155 I/O Chip**: Used for controlling the input and output operations, as well as the LED displays. The chip has built-in ports and timer capabilities.
+- **Memory Mapped I/O**: The system uses memory addresses for interacting with the I/O peripherals and RTC, including display memory.
 
-### 4. **Intel 8155 I/O Chip**
-   - The **Intel 8155** serves as an interface between the microprocessor and the LED displays. It also manages input buttons used for setting the time.
+### LED Display
+- **Dual HDLG-2416 Alphanumeric Displays**: Each display contains four 5x7 dot matrix alphanumeric characters. Two displays are used in this design, with addresses starting from 0x80 for the right display and 0xC0 for the left display. These displays show the time in BCD format and allow for visual feedback during user input.
 
-### 5. **Buttons and Input Circuitry**
-   - Two buttons are used to set the time. One button increases the hour, while the other increases the minute. These buttons are debounced using an RC circuit to prevent unwanted state changes due to switch bounce.
+### Buttons
+- **Hour and Minute Adjust Buttons**: Two physical buttons are included, allowing the user to increment the hours and minutes displayed on the LED screens. Each button is debounced using an RC circuit for more reliable input.
 
-## Software Description
+### Power Supply and Clock
+- **Oscillator Circuit**: A stable oscillator is implemented using the onboard clock for real-time timekeeping.
 
-The software for this project is written in BASIC and Assembly. It controls the clock’s operation, display output, and user interaction. Below is an overview of the key software components:
+### Schematic Details
+The schematic, titled **Mini (Ver 4 2024) Schematic**, provides a complete diagram of the hardware connections, including the 80C85 CPU, M48T02-70PC1 RTC, dual HDLG-2416 displays, the 8155 I/O chip, and supporting components like resistors and capacitors for signal stability.
 
-### 1. **Clock Initialization**
-   The clock is initialized by writing zero to the necessary memory locations:
-   ```basic
-   Poke $fff8, $00  'Initialize clock
-   Poke $fff9, $00  'Initialize seconds
-   Poke $fffc, $00  'Initialize minutes
-   Poke $fffd, $00  'Initialize hours
-   Poke $fffe, $00  'Start clock
-   ```
+## Software Implementation
 
-### 2. **Time Display**
-   The clock displays the time using the HDLG-2416 displays. Each display is addressed using the Intel 8155 I/O chip. The colon between hours and minutes is toggled every second to mimic a typical clock behavior:
-   ```basic
-   Put $81, $3A  ' Place colon on left display
-   Put $C2, $3A  ' Place colon on right display
-   ```
+The project is programmed using a combination of **Assembly** and **BASIC** for the 80C85 system. Below is a breakdown of the key functionalities:
 
-### 3. **Binary-Coded Decimal (BCD) Handling**
-   The 8085 works with BCD values for timekeeping. Special assembly routines are used to convert BCD to binary and ASCII formats for display purposes:
-   ```assembly
-   ASM:BCDBIN:
-   ASM:        PUSH B      'Save BC register
-   ASM:        PUSH D      'Save DE register
-   ASM:        MOV B,A     'Save BCD value
-   ASM:        ANI 0FH     'Mask least significant nibble
-   ASM:        MOV C,A     'Save lower BCD
-   ASM:        MOV A,B     'Get upper BCD nibble
-   ASM:        ANI F0H     'Mask most significant nibble
-   ASM:        RRC         'Rotate to shift upper nibble into position
-   ASM:        RRC
-   ASM:        ADD C       'Add lower nibble
-   ASM:        POP D       'Restore DE register
-   ASM:        POP B       'Restore BC register
-   ```
+### Code Functions
+1. **Time Management**:
+   - The system reads and writes time from/to the M48T02-70PC1 RTC, converting BCD time data to binary for internal calculations and ASCII for display purposes.
+   
+2. **User Input**:
+   - The system allows users to adjust hours and minutes using two input buttons, interfacing with the 8155 I/O chip. The input buttons are debounced using an RC circuit.
 
-### 4. **User Interaction and Time Adjustment**
-   The system allows users to adjust the hour and minute by pressing the corresponding buttons. When a button is pressed, the program increments the hour or minute, adjusts for BCD overflow, and updates the display:
-   ```basic
-   If hrbutton = $08 Then
-      ' Increase hour by 1, handle BCD overflow
-      Poke $fffb, (Peek($fffb) + 1)
-   End If
-   ```
+3. **Display Control**:
+   - The time is displayed on two HDLG-2416 alphanumeric LED displays. The right display starts at address `0x80` and the left display starts at address `0xC0`.
 
-### 5. **Main Loop and Timekeeping**
-   The program’s main loop continually checks for changes in the second value to update the display. This ensures the time is shown in real-time while allowing for button presses to adjust the time as needed:
-   ```basic
-   secondcheck:
-   sec = Peek($fff9)  'Read seconds from RTC
-   If sec = seccheck Then
-      Goto secondcheck  'Wait until the second changes
-   Else
-      Goto clockmain    'Update time and display
-   Endif
-   ```
+4. **Colon Blink**:
+   - A blinking colon separates hours and minutes on the LED displays. The colon is controlled via a simple toggle logic that switches every second.
 
-## License
-This project is licensed under the MIT License.
+### Assembly Functions
+- **BCDBIN**: Converts BCD (Binary Coded Decimal) time data into a binary format for internal processing.
+- **BINASCII**: Converts binary values into their ASCII equivalents for display on the alphanumeric LEDs.
 
-## Contributions
-If you'd like to contribute to the FigTroniX 8085 RealTime Clock project, please feel free to submit pull requests or report issues via the repository on GitHub.
+### Clock Update Logic
+- The system reads the seconds, minutes, and hours from the M48T02-70PC1 RTC and updates the LED display.
+- User input is processed to modify the hours and minutes, with changes reflected in both the RTC and the display.
 
-## Acknowledgements
-Special thanks to the open-source community and the creators of the 8085, M48T02-70PC1, and HDLG-2416 components.
+### Example Code Snippet
+```basic
+Poke $fff8, $00  ' Initialize clock
+Poke $fff9, $00  ' Initialize clock
+Poke $fffc, $00  ' Initialize clock
+Put $40, $42     ' Initialize 8155 ports (PORT A = INPUT, PORT B = OUTPUT, PORT C = INPUT)
+Put $81, $3a     ' Place colon in display
+Put $c2, $3a     ' Place colon in display
+```
+
+### Detailed Code Logic
+The main loop in the code continually checks the seconds value from the RTC, and once a new second is detected, it updates the display. User inputs are checked for changes in hours and minutes, and the time is adjusted accordingly.
+
+## Usage Instructions
+
+1. **Starting the System**:
+   - Power on the system. The LED displays will show the current time stored in the M48T02-70PC1 RTC.
+   
+2. **Adjusting Time**:
+   - Use the two buttons to increment hours and minutes. The changes will be immediately reflected on the display.
+
+3. **Viewing Time**:
+   - The time will always be displayed on the alphanumeric LED displays in BCD format.
+
+## Files Included
+
+- **Source Code**: Assembly and BASIC files for the 80C85 CPU and RTC interface.
+- **Schematic**: Mini (Ver 4 2024) Schematic for the hardware layout.
+- **README.md**: This file provides detailed information on hardware and software functionality.
+
+## Conclusion
+
+This project demonstrates how to build a fully functioning RealTime Clock using the Intel 80C85 microprocessor, M48T02-70PC1 RTC, 8155 I/O, and dual HDLG-2416 displays. It showcases how both hardware and software work in unison to provide accurate timekeeping and user input handling for real-time clock adjustments.
