@@ -3,7 +3,7 @@
 
 ## Project Overview
 
-This project is a real-time clock using the 80C85 microprocessor, interfaced with two HDLG-2416 alphanumeric LED displays to show the current time. The time is displayed in hours, minutes, and seconds, and it scrolls from right to left across both displays. The clock can be configured to display time in either decimal or hexadecimal format, and buttons are used to adjust the hours and minutes.
+This project is a real-time clock using the 8085 microprocessor, interfaced with two HDLG-2416 alphanumeric LED displays to show the current time. The time is displayed in hours, minutes, and seconds, and it scrolls from right to left across both displays. The clock can be configured to display time in either decimal or hexadecimal format, and buttons are used to adjust the hours and minutes.
 
 ## Features
 
@@ -16,7 +16,7 @@ This project is a real-time clock using the 80C85 microprocessor, interfaced wit
 
 ## Hardware
 
-- **Microprocessor:** 80C85
+- **Microprocessor:** 8085
 - **Display:** 2 x HDLG-2416 alphanumeric LED displays
   - Left display: starts at address 80H
   - Right display: starts at address C0H
@@ -69,7 +69,7 @@ The clock is programmed to toggle between displaying time in decimal and hexadec
 
 ## Schematic and Gerber Files
 
-Please refer to the included schematic and Gerber files for the complete hardware design. These files detail the connections between the 80C85, the HDLG-2416 displays, the buttons, and the supporting components like the debounce RC circuits.
+Please refer to the included schematic and Gerber files for the complete hardware design. These files detail the connections between the 8085, the HDLG-2416 displays, the buttons, and the supporting components like the debounce RC circuits.
 
 ## Usage Instructions
 
