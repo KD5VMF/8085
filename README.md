@@ -1,9 +1,9 @@
 
-# FigTroniX 80C85 RealTime Clock 2024 VER 3
+# FigTroniX 8085 RealTime Clock 2024 VER 4
 
 ## Code Overview
 
-This program implements a real-time clock using the 80C85 microprocessor. The time is displayed across two HDLG-2416 alphanumeric LED displays. The left display begins at address `80H`, and the right display begins at `C0H`. The time is shown in the format `HH:MM:SS`, with colons that toggle on and off every second. The program also allows for adjusting the hour and minute values via button inputs.
+This program implements a real-time clock using the 8085 microprocessor. The time is displayed across two HDLG-2416 alphanumeric LED displays. The left display begins at address `80H`, and the right display begins at `C0H`. The time is shown in the format `HH:MM:SS`, with colons that toggle on and off every second. The program also allows for adjusting the hour and minute values via button inputs.
 
 ### Initialization
 
