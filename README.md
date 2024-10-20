@@ -57,7 +57,8 @@ ASM:        RET              'RETURN
 - 8085 Microprocessor
 - 8155 I/O Chip
 - Two HDLG-2416 Alphanumeric LED Displays
-
+- M48T02-70PC1 16Kb SRAM with RTC
+- 
 ## Scrolling Feature
 
 The time scrolls from the right display to the left display in a loop, then clears and repeats. This is achieved by writing to the appropriate memory locations for the displays, starting with the right display (`C0H`), followed by the left (`80H`).
