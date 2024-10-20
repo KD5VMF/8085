@@ -25,7 +25,6 @@ Put $c2, $3a  'place : for clock
 
 The main clock loop reads time from memory, converts BCD values to binary, and outputs them to the LED displays. Colons between the hours, minutes, and seconds toggle on and off to create a blinking effect.
 
-The scrolling feature is implemented, starting from the right display and moving to the left, then clearing the displays before repeating.
 
 ### Time Adjustment
 
