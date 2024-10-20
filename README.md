@@ -1,14 +1,14 @@
 
-# FigTroniX 80C85 RealTime Clock 2024 VER 3
+# FigTroniX 8085 RealTime Clock 2024 Ver 4
 
 ## Overview
 
-This project, **FigTroniX 80C85 RealTime Clock (2024 VER 3)**, is designed to work with an Intel 80C85 microprocessor-based system. It includes a RealTime Clock (RTC) using the M48T02-70PC1, an STMicroelectronics Timekeeper, for timekeeping and utilizes dual HDLG-2416 alphanumeric LED displays. The purpose of this system is to maintain and display the current time in BCD format, allowing user input via buttons to adjust the time, all while operating through assembly and BASIC code.
+This project, **FigTroniX 8085 RealTime Clock (2024 Ver 4)**, is designed to work with an Intel 8085 microprocessor-based system. It includes a RealTime Clock (RTC) using the M48T02-70PC1, an STMicroelectronics Timekeeper, for timekeeping and utilizes dual HDLG-2416 alphanumeric LED displays. The purpose of this system is to maintain and display the current time in BCD format, allowing user input via buttons to adjust the time, all while operating through assembly and BASIC code.
 
 ## Hardware Components
 
 ### Core Processor
-- **Intel 80C85 Microprocessor**: A classic 8-bit CPU used for controlling the real-time clock and managing data in the system.
+- **Intel 8085 Microprocessor**: A classic 8-bit CPU used for controlling the real-time clock and managing data in the system.
 
 ### RTC
 - **M48T02-70PC1 RealTime Clock (RTC)**: A 2K x 8 non-volatile static RAM and Timekeeper, capable of maintaining accurate timekeeping, even with power off, thanks to an embedded lithium energy source. This RTC stores seconds, minutes, and hours in BCD format, supporting real-time clock operations for long-term timekeeping.
@@ -27,11 +27,11 @@ This project, **FigTroniX 80C85 RealTime Clock (2024 VER 3)**, is designed to wo
 - **Oscillator Circuit**: A stable oscillator is implemented using the onboard clock for real-time timekeeping.
 
 ### Schematic Details
-The schematic, titled **Mini (Ver 4 2024) Schematic**, provides a complete diagram of the hardware connections, including the 80C85 CPU, M48T02-70PC1 RTC, dual HDLG-2416 displays, the 8155 I/O chip, and supporting components like resistors and capacitors for signal stability.
+The schematic, titled **Mini (Ver 4 2024) Schematic**, provides a complete diagram of the hardware connections, including the 8085 CPU, M48T02-70PC1 RTC, dual HDLG-2416 displays, the 8155 I/O chip, and supporting components like resistors and capacitors for signal stability.
 
 ## Software Implementation
 
-The project is programmed using a combination of **Assembly** and **BASIC** for the 80C85 system. Below is a breakdown of the key functionalities:
+The project is programmed using a combination of **Assembly** and **BASIC** for the 8085 system. Below is a breakdown of the key functionalities:
 
 ### Code Functions
 1. **Time Management**:
@@ -80,10 +80,10 @@ The main loop in the code continually checks the seconds value from the RTC, and
 
 ## Files Included
 
-- **Source Code**: Assembly and BASIC files for the 80C85 CPU and RTC interface.
+- **Source Code**: Assembly and BASIC files for the 8085 CPU and RTC interface.
 - **Schematic**: Mini (Ver 4 2024) Schematic for the hardware layout.
 - **README.md**: This file provides detailed information on hardware and software functionality.
 
 ## Conclusion
 
-This project demonstrates how to build a fully functioning RealTime Clock using the Intel 80C85 microprocessor, M48T02-70PC1 RTC, 8155 I/O, and dual HDLG-2416 displays. It showcases how both hardware and software work in unison to provide accurate timekeeping and user input handling for real-time clock adjustments.
+This project demonstrates how to build a fully functioning RealTime Clock using the Intel 8085 microprocessor, M48T02-70PC1 RTC, 8155 I/O, and dual HDLG-2416 displays. It showcases how both hardware and software work in unison to provide accurate timekeeping and user input handling for real-time clock adjustments.
