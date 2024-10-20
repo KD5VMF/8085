@@ -1,15 +1,15 @@
 
-# FigTroniX 80C85 RealTime Clock (2024 VER 3)
+# FigTroniX 8085 RealTime Clock (2024 Ver 4)
 
 ## Overview
-The **FigTroniX 80C85 RealTime Clock 2024 VER 3** is a hardware and software implementation of a real-time clock system built around the 80C85 microprocessor and an M48T02-70PC1 Real-Time Clock module. This project is designed to work with HDLG-2416 alphanumeric LED displays connected via an Intel 8155 I/O chip.
+The **FigTroniX 8085 RealTime Clock 2024 Ver 4** is a hardware and software implementation of a real-time clock system built around the 8085 microprocessor and an M48T02-70PC1 Real-Time Clock module. This project is designed to work with HDLG-2416 alphanumeric LED displays connected via an Intel 8155 I/O chip.
 
 The clock keeps time in both hexadecimal and decimal formats, and users can interact with the system to modify hours and minutes via buttons connected to the system. The real-time clock data is maintained even when power is off using the M48T02-70PC1 RTC module, which includes battery-backed RAM.
 
 ## Hardware Components
 
-### 1. **80C85 Microprocessor**
-   - The **80C85** is an 8-bit microprocessor used to handle the main operations of this clock. It executes the assembly instructions that control the timing, display, and user interactions.
+### 1. **8085 Microprocessor**
+   - The **8085** is an 8-bit microprocessor used to handle the main operations of this clock. It executes the assembly instructions that control the timing, display, and user interactions.
 
 ### 2. **M48T02-70PC1 Real-Time Clock**
    - The **M48T02-70PC1** module provides real-time clock (RTC) functionality with built-in battery backup. This ensures that the clock maintains accurate time even when the system is powered off.
@@ -46,7 +46,7 @@ The software for this project is written in BASIC and Assembly. It controls the 
    ```
 
 ### 3. **Binary-Coded Decimal (BCD) Handling**
-   The 80C85 works with BCD values for timekeeping. Special assembly routines are used to convert BCD to binary and ASCII formats for display purposes:
+   The 8085 works with BCD values for timekeeping. Special assembly routines are used to convert BCD to binary and ASCII formats for display purposes:
    ```assembly
    ASM:BCDBIN:
    ASM:        PUSH B      'Save BC register
@@ -88,7 +88,7 @@ The software for this project is written in BASIC and Assembly. It controls the 
 This project is licensed under the MIT License.
 
 ## Contributions
-If you'd like to contribute to the FigTroniX 80C85 RealTime Clock project, please feel free to submit pull requests or report issues via the repository on GitHub.
+If you'd like to contribute to the FigTroniX 8085 RealTime Clock project, please feel free to submit pull requests or report issues via the repository on GitHub.
 
 ## Acknowledgements
-Special thanks to the open-source community and the creators of the 80C85, M48T02-70PC1, and HDLG-2416 components.
+Special thanks to the open-source community and the creators of the 8085, M48T02-70PC1, and HDLG-2416 components.
