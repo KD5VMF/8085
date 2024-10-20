@@ -1,74 +1,26 @@
 
-# FigTroniX 8085 RealTime Clock 2024 VER 4
+# FigTroniX 80C85 RealTime Clock 2024 VER 3
 
-## Code Overview
+## Project Overview
 
-This program implements a real-time clock using the 8085 microprocessor. The time is displayed across two HDLG-2416 alphanumeric LED displays. The left display begins at address `80H`, and the right display begins at `C0H`. The time is shown in the format `HH:MM:SS`, with colons that toggle on and off every second. The program also allows for adjusting the hour and minute values via button inputs.
+This project implements a Real-Time Clock (RTC) using an 80C85 microprocessor and two HDLG-2416 alphanumeric LED displays. The project relies on the **M48T02-70PC1** timekeeper chip for maintaining accurate time, with user interaction provided via buttons to adjust hours and minutes. The time is displayed in a standard HH:MM:SS format on the alphanumeric displays, with optional hexadecimal or decimal output for seconds, minutes, and hours.
 
-### Initialization
+### Hardware
 
-The clock is initialized by setting the appropriate memory locations and configuring the 8155 I/O chip.
+- **80C85 microprocessor**
+- **M48T02-70PC1** timekeeper chip
+- **Two HDLG-2416 alphanumeric LED displays**:
+  - Left display starting at address `80H`
+  - Right display starting at address `C0H`
+- **8155 I/O chip** for port and switch control
+- **Button inputs** for adjusting the hour and minute settings
+- **RC circuit** for button debounce to ensure stable user input
 
-```basic
-Poke $fff8, $00  'iniz clock
-Poke $fff9, $00  'iniz clock
-Poke $fffc, $00  'iniz clock
-Poke $fffd, $00  'iniz clock
-Poke $fffe, $00  'iniz clock
-Put $40, $42  'iniz 8155 PORT A = INPUT, PORT B = OUTPUT, PORT C = INPUT
-Put $42, $00  'clear led 8155
-Put $81, $3a  'place : for clock
-Put $c2, $3a  'place : for clock
-```
+### Key Features
 
-### Main Loop and Display
-
-The main clock loop reads time from memory, converts BCD values to binary, and outputs them to the LED displays. Colons between the hours, minutes, and seconds toggle on and off to create a blinking effect.
-
-
-### Time Adjustment
-
-Two buttons are used to adjust the hour and minute values. Button debounce is handled via an RC circuit. The buttons are connected to `PC0` and `PC1` of the 8155 I/O chip.
-
-### Binary-to-ASCII Conversion
-
-The BCD-to-ASCII conversion is handled via the following subroutine:
-
-```assembly
-ASM:BINASCII:
-ASM:        LXI D,timeascii  'POINT INDEX TO WHERE ASCII CODE IS TO BE STORED
-ASM:        MOV A,M          'GET BYTE
-ASM:        MOV B,A          'SAVE BYTE
-ASM:        RRC              'ROTATE FOUR TIMES TO PLACE THE FOUR HIGH ORDER BITS OF THE SELECTED BYTE IN THE LOW ORDER LOCATION
-ASM:        RRC
-ASM:        RRC
-ASM:        RRC
-ASM:        CALL ASCII       'CALL ASCII CONVERSION
-ASM:        STAX D           'SAVE FIRST ASCII HEX
-ASM:        INX D            'POINT TO NEXT MEMORY LOCATION
-ASM:        MOV A,B          'GET BYTE
-ASM:        CALL ASCII       'CALL ASCII CONVERSION
-ASM:        STAX D           'SAVE NEXT ASCII HEX
-ASM:        RET              'RETURN
-```
-
-### Hardware Requirements
-
-- 8085 Microprocessor
-- 8155 I/O Chip
-- Two HDLG-2416 Alphanumeric LED Displays
-- M48T02-70PC1 16Kb SRAM with RTC
-- 
-## Scrolling Feature
-
-The time scrolls from the right display to the left display in a loop, then clears and repeats. This is achieved by writing to the appropriate memory locations for the displays, starting with the right display (`C0H`), followed by the left (`80H`).
-
-## Usage
-
-- **Hour Button:** Connected to `PC0` of 8155.
-- **Minute Button:** Connected to `PC1` of 8155.
-- **Scrolling:** The time will scroll from the right display to the left, showing the current time.
-
-## License
-
-Open to use and modify for personal or educational purposes.
+- Displays time in HH:MM:SS format with colons between the hour, minute, and second values.
+- Button inputs allow users to manually adjust the hour and minute values.
+- The seconds are displayed in binary format on the LED display.
+- Supports switching between decimal and hexadecimal output for the time.
+- Uses the **M48T02-70PC1** chip to maintain the time accurately, even when powered off.
+- Provides clear colon display functionality for better visual separation of hours, minutes, and seconds.
