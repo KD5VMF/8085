@@ -1,6 +1,6 @@
 ; Compiled with: 8085 Simulator IDE v6.67
 ; Microprocessor model: 8085
-; Clock frequency: 4.0MHz
+; Clock frequency: 3.074MHz
 ;
 ;       The address of 'read' (ushort) (global) is 0xFEF6 (-10)
 ;       The address of 'write' (ushort) (global) is 0xFEF9 (-7)
@@ -33,7 +33,7 @@
 	LXI H,0FF00H
 	LXI SP,0FEE2H
 ; User code start
-; 1: 'FigTroniX 80C85 RealTime Clock 2024 VER 3
+; 1: 'FigTroniX 8085 RealTime Clock 2024 VER 4
 ; 2: 
 ; 3: ' Initialize clock
 ; 4: Poke $fff8, $00  'iniz clock
