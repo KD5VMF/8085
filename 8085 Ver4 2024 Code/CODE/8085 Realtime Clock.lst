@@ -1,0 +1,1244 @@
+0001   0000             ; Compiled with: 8085 Simulator IDE v4.54
+0002   0000             ; Microprocessor model: 8085
+0003   0000             ; Clock frequency: 5.0MHz
+0004   0000             ;
+0005   0000             ;       The address of 'read' (integer) (global) is FEF4H (-12)
+0006   0000             ;       The address of 'write' (integer) (global) is FEF2H (-14)
+0007   0000             ;       The address of 'startclkupdate' (integer) (global) is FEFAH (-6)
+0008   0000             ;       The address of 'timeascii' (integer) (global) is FEF8H (-8)
+0009   0000             ;       The address of 'timebin' (integer) (global) is FEF6H (-10)
+0010   0000             ;       The address of 'sec' (integer) (global) is FEE8H (-24)
+0011   0000             ;       The address of 'min' (integer) (global) is FEE6H (-26)
+0012   0000             ;       The address of 'hr' (integer) (global) is FEE4H (-28)
+0013   0000             ;       The address of 'addmin' (integer) (global) is FEFEH (-2)
+0014   0000             ;       The address of 'addhr' (integer) (global) is FEFCH (-4)
+0015   0000             ;       The address of 'hrbutton' (integer) (global) is FEE2H (-30)
+0016   0000             ;       The address of 'minbutton' (integer) (global) is FEE0H (-32)
+0017   0000             ;       The address of 'incounter' (integer) (global) is FEF0H (-16)
+0018   0000             ;       The address of 'outcounter' (integer) (global) is FEEEH (-18)
+0019   0000             ;       The address of 'checkhexsw' (integer) (global) is FEDEH (-34)
+0020   0000             ;       The address of 'intime' (integer) (global) is FEECH (-20)
+0021   0000             ;       The address of 'outtime' (integer) (global) is FEEAH (-22)
+0022   0000 21 00 FF    	LXI H,0FF00H
+0023   0003 31 DE FE    	LXI SP,0FEDEH
+0024   0006             ; User code start
+0025   0006             ; 1: 'FigTroniX 8085 RealTime Clock 2015
+0026   0006             ; 2: 
+0027   0006             ; 3: Poke $fff8, $00  'iniz clock
+0028   0006 21 F8 FF    	LXI H,0FFF8H
+0029   0009 E5          	PUSH H
+0030   000A 21 00 00    	LXI H,0000H
+0031   000D 7D          	MOV A,L
+0032   000E D1          	POP D
+0033   000F 12          	STAX D
+0034   0010             ; 4: Poke $fffc, $00  'iniz clock
+0035   0010 21 FC FF    	LXI H,0FFFCH
+0036   0013 E5          	PUSH H
+0037   0014 21 00 00    	LXI H,0000H
+0038   0017 7D          	MOV A,L
+0039   0018 D1          	POP D
+0040   0019 12          	STAX D
+0041   001A             ; 5: Poke $fff9, $00  'iniz clock
+0042   001A 21 F9 FF    	LXI H,0FFF9H
+0043   001D E5          	PUSH H
+0044   001E 21 00 00    	LXI H,0000H
+0045   0021 7D          	MOV A,L
+0046   0022 D1          	POP D
+0047   0023 12          	STAX D
+0048   0024             ; 6: Put $40, $42  'iniz 8155
+0049   0024 3E 42       	MVI A,42H
+0050   0026 D3 40       	OUT 40H
+0051   0028             ; 7: 
+0052   0028             ; 8: Dim read As Integer
+0053   0028             ; 9: Dim write As Integer
+0054   0028             ; 10: Dim startclkupdate As Integer
+0055   0028             ; 11: Dim timeascii As Integer
+0056   0028             ; 12: Dim timebin As Integer
+0057   0028             ; 13: Dim sec As Integer
+0058   0028             ; 14: Dim min As Integer
+0059   0028             ; 15: Dim hr As Integer
+0060   0028             ; 16: Dim addmin As Integer
+0061   0028             ; 17: Dim addhr As Integer
+0062   0028             ; 18: Dim hrbutton As Integer
+0063   0028             ; 19: Dim minbutton As Integer
+0064   0028             ; 20: Dim incounter As Integer
+0065   0028             ; 21: Dim outcounter As Integer
+0066   0028             ; 22: Dim checkhexsw As Integer
+0067   0028             ; 23: Dim intime As Integer
+0068   0028             ; 24: Dim outtime As Integer
+0069   0028             ; 25: 
+0070   0028             ; 26: Gosub clear  'Clear LED and Time Display's
+0071   0028 CD 20 05    	CALL L0003
+0072   002B             ; 27: 
+0073   002B             ; 28: 'Wait State
+0074   002B             ; 29: outtime = $30
+0075   002B 21 EA FE    	LXI H,0FEEAH
+0076   002E E5          	PUSH H
+0077   002F 21 30 00    	LXI H,0030H
+0078   0032 D1          	POP D
+0079   0033 7D          	MOV A,L
+0080   0034 12          	STAX D
+0081   0035 13          	INX D
+0082   0036 7C          	MOV A,H
+0083   0037 12          	STAX D
+0084   0038             ; 30: intime = $20
+0085   0038 21 EC FE    	LXI H,0FEECH
+0086   003B E5          	PUSH H
+0087   003C 21 20 00    	LXI H,0020H
+0088   003F D1          	POP D
+0089   0040 7D          	MOV A,L
+0090   0041 12          	STAX D
+0091   0042 13          	INX D
+0092   0043 7C          	MOV A,H
+0093   0044 12          	STAX D
+0094   0045             ; 31: 
+0095   0045             ; 32: 'Setup
+0096   0045             ; 33: timeascii = $da00  'SET SAVE POINT FOR TIME IN ASCII
+0097   0045 21 F8 FE    	LXI H,0FEF8H
+0098   0048 E5          	PUSH H
+0099   0049 21 00 DA    	LXI H,0DA00H
+0100   004C D1          	POP D
+0101   004D 7D          	MOV A,L
+0102   004E 12          	STAX D
+0103   004F 13          	INX D
+0104   0050 7C          	MOV A,H
+0105   0051 12          	STAX D
+0106   0052             ; 34: timebin = $db00  'SET SAVE POINT FOR TIME IN BIN
+0107   0052 21 F6 FE    	LXI H,0FEF6H
+0108   0055 E5          	PUSH H
+0109   0056 21 00 DB    	LXI H,0DB00H
+0110   0059 D1          	POP D
+0111   005A 7D          	MOV A,L
+0112   005B 12          	STAX D
+0113   005C 13          	INX D
+0114   005D 7C          	MOV A,H
+0115   005E 12          	STAX D
+0116   005F             ; 35: read = $40  'NEEDED FOR THE UPDATE OF THE RAM LOCATIONS TO ALLOW THE USER TO READ THE TIME
+0117   005F 21 F4 FE    	LXI H,0FEF4H
+0118   0062 E5          	PUSH H
+0119   0063 21 40 00    	LXI H,0040H
+0120   0066 D1          	POP D
+0121   0067 7D          	MOV A,L
+0122   0068 12          	STAX D
+0123   0069 13          	INX D
+0124   006A 7C          	MOV A,H
+0125   006B 12          	STAX D
+0126   006C             ; 36: write = $80  'NEEDED FOR THE UPDATE OF THE RAM LOCATIONS TO ALLOW THE USER TO WRITE THE TIME
+0127   006C 21 F2 FE    	LXI H,0FEF2H
+0128   006F E5          	PUSH H
+0129   0070 21 80 00    	LXI H,0080H
+0130   0073 D1          	POP D
+0131   0074 7D          	MOV A,L
+0132   0075 12          	STAX D
+0133   0076 13          	INX D
+0134   0077 7C          	MOV A,H
+0135   0078 12          	STAX D
+0136   0079             ; 37: startclkupdate = $00  'NEEDED TO START / RESTART CLOCK
+0137   0079 21 FA FE    	LXI H,0FEFAH
+0138   007C E5          	PUSH H
+0139   007D 21 00 00    	LXI H,0000H
+0140   0080 D1          	POP D
+0141   0081 7D          	MOV A,L
+0142   0082 12          	STAX D
+0143   0083 13          	INX D
+0144   0084 7C          	MOV A,H
+0145   0085 12          	STAX D
+0146   0086             ; 38: 
+0147   0086             ; 39: clockmain:
+0148   0086             L0001:	
+0149   0086             ; 40: Poke $fff8, read  'STOP RAM UPDATE TO PREVENT READING THE TIME WHILE THE CLOCK IS UPDATING THE RAM LOCATIONS.
+0150   0086 21 F8 FF    	LXI H,0FFF8H
+0151   0089 E5          	PUSH H
+0152   008A 21 F4 FE    	LXI H,0FEF4H
+0153   008D 7E          	MOV A,M
+0154   008E 23          	INX H
+0155   008F 66          	MOV H,M
+0156   0090 6F          	MOV L,A
+0157   0091 7D          	MOV A,L
+0158   0092 D1          	POP D
+0159   0093 12          	STAX D
+0160   0094             ; 41: sec = Peek($fff9)  'SAVE SEC DATA AS INTEGER
+0161   0094 21 E8 FE    	LXI H,0FEE8H
+0162   0097 E5          	PUSH H
+0163   0098 21 F9 FF    	LXI H,0FFF9H
+0164   009B 7E          	MOV A,M
+0165   009C 6F          	MOV L,A
+0166   009D 26 00       	MVI H,00H
+0167   009F D1          	POP D
+0168   00A0 7D          	MOV A,L
+0169   00A1 12          	STAX D
+0170   00A2 13          	INX D
+0171   00A3 7C          	MOV A,H
+0172   00A4 12          	STAX D
+0173   00A5             ; 42: min = Peek($fffa)  'SAVE MIN DATA AS INTEGER
+0174   00A5 21 E6 FE    	LXI H,0FEE6H
+0175   00A8 E5          	PUSH H
+0176   00A9 21 FA FF    	LXI H,0FFFAH
+0177   00AC 7E          	MOV A,M
+0178   00AD 6F          	MOV L,A
+0179   00AE 26 00       	MVI H,00H
+0180   00B0 D1          	POP D
+0181   00B1 7D          	MOV A,L
+0182   00B2 12          	STAX D
+0183   00B3 13          	INX D
+0184   00B4 7C          	MOV A,H
+0185   00B5 12          	STAX D
+0186   00B6             ; 43: hr = Peek($fffb)  'SAVE HR DATA AS INTEGER
+0187   00B6 21 E4 FE    	LXI H,0FEE4H
+0188   00B9 E5          	PUSH H
+0189   00BA 21 FB FF    	LXI H,0FFFBH
+0190   00BD 7E          	MOV A,M
+0191   00BE 6F          	MOV L,A
+0192   00BF 26 00       	MVI H,00H
+0193   00C1 D1          	POP D
+0194   00C2 7D          	MOV A,L
+0195   00C3 12          	STAX D
+0196   00C4 13          	INX D
+0197   00C5 7C          	MOV A,H
+0198   00C6 12          	STAX D
+0199   00C7             ; 44: 
+0200   00C7             ; 45: '*******************************************LED BINARY SEC OUTPUT*******************************************
+0201   00C7             ; 46: ASM:        LXI H,sec  'POINT TO MEMORY LOCATION THAT HOLDS THE BCD FOR SEC
+0202   00C7 21 E8 FE    	LXI H,0FEE8H
+0203   00CA             ; 47: ASM:        LXI B,timebin  'POINT TO MEMORY LOCATION THAT WILL HOLD THE TIME IN BINARY
+0204   00CA 01 F6 FE    	LXI B,0FEF6H
+0205   00CD             ; 48: ASM:        MOV A,M  'GET BCD
+0206   00CD 7E          	MOV A,M
+0207   00CE             ; 49: ASM:        CALL BCDBIN  'CALL BINARY-CODED-DECIMAL TO BINARY CONVERSION
+0208   00CE CD E6 04    	CALL BCDBIN
+0209   00D1             ; 50: ASM:        STAX B  'SAVE BINARY
+0210   00D1 02          	STAX B
+0211   00D2             ; 51: ASM:        LXI H,timebin  'POINT TO MEMORY LOCATION THAT WILL HOLD THE TIME IN BINARY AGAIN
+0212   00D2 21 F6 FE    	LXI H,0FEF6H
+0213   00D5             ; 52: ASM:        MOV A,M  'GET BIN
+0214   00D5 7E          	MOV A,M
+0215   00D6             ; 53: 'ASM:        CMA  'INVERT THE ACCUMULATOR
+0216   00D6             ; 54: ASM:        OUT 42H  'SEND BIN SEC OUT TO LED
+0217   00D6 D3 42       	OUT 42H
+0218   00D8             ; 55: 
+0219   00D8             ; 56: '********************************CHECK SWITCH TO CHANGE BETWEEN DEC OR HEX OUT***************************
+0220   00D8             ; 57: 'checkswitch:
+0221   00D8             ; 58: checkhexsw = Get($41)  '8155 Port A
+0222   00D8 21 DE FE    	LXI H,0FEDEH
+0223   00DB E5          	PUSH H
+0224   00DC DB 41       	IN 41H
+0225   00DE 6F          	MOV L,A
+0226   00DF 26 00       	MVI H,00H
+0227   00E1 D1          	POP D
+0228   00E2 7D          	MOV A,L
+0229   00E3 12          	STAX D
+0230   00E4 13          	INX D
+0231   00E5 7C          	MOV A,H
+0232   00E6 12          	STAX D
+0233   00E7             ; 59: If checkhexsw >= $0001 Then  'OUTPUT IN DEC
+0234   00E7 21 DE FE    	LXI H,0FEDEH
+0235   00EA 7E          	MOV A,M
+0236   00EB 23          	INX H
+0237   00EC 66          	MOV H,M
+0238   00ED 6F          	MOV L,A
+0239   00EE E5          	PUSH H
+0240   00EF 21 01 00    	LXI H,0001H
+0241   00F2 D1          	POP D
+0242   00F3 CD 61 05    	CALL C004
+0243   00F6 7C          	MOV A,H
+0244   00F7 B5          	ORA L
+0245   00F8 CA 3E 01    	JZ L0004
+0246   00FB             ; 60: ASM:        LXI H,sec  'POINT TO MEMORY LOCATION THAT HOLDS THE CURRENT SEC
+0247   00FB 21 E8 FE    	LXI H,0FEE8H
+0248   00FE             ; 61: ASM:        CALL BINASCII  'CALL BINARY TO ASCII CONVERSION
+0249   00FE CD 00 05    	CALL BINASCII
+0250   0101             ; 62: ASM:        LXI H,timeascii  'POINT TO MEMORY LOCATION THAT HOLDS THE TIME IN ASCII
+0251   0101 21 F8 FE    	LXI H,0FEF8H
+0252   0104             ; 63: ASM:        MOV A,M  'GET ASCII
+0253   0104 7E          	MOV A,M
+0254   0105             ; 64: ASM:        OUT 00c1H  'SEND TO DISPLAY
+0255   0105 D3 C1       	OUT 00c1H
+0256   0107             ; 65: ASM:        INX H  'POINT TO NEXT ASCII CHAR
+0257   0107 23          	INX H
+0258   0108             ; 66: ASM:        MOV A,M  'GET ASCII
+0259   0108 7E          	MOV A,M
+0260   0109             ; 67: ASM:        OUT 00c0H  'SEND TO DISPLAY
+0261   0109 D3 C0       	OUT 00c0H
+0262   010B             ; 68: ASM:        LXI H,min  'POINT TO MEMORY LOCATION THAT HOLDS THE CURRENT MIN
+0263   010B 21 E6 FE    	LXI H,0FEE6H
+0264   010E             ; 69: ASM:        MOV A,M  'GET BCD
+0265   010E 7E          	MOV A,M
+0266   010F             ; 70: ASM:        CALL BINASCII  'CALL BINARY TO ASCII CONVERSION
+0267   010F CD 00 05    	CALL BINASCII
+0268   0112             ; 71: ASM:        LXI H,timeascii  'POINT TO MEMORY LOCATION THAT HOLDS THE TIME IN ASCII
+0269   0112 21 F8 FE    	LXI H,0FEF8H
+0270   0115             ; 72: ASM:        MOV A,M  'GET ASCII
+0271   0115 7E          	MOV A,M
+0272   0116             ; 73: ASM:        OUT 0080H  'SEND TO DISPLAY
+0273   0116 D3 80       	OUT 0080H
+0274   0118             ; 74: ASM:        INX H  'POINT TO NEXT ASCII CHAR
+0275   0118 23          	INX H
+0276   0119             ; 75: ASM:        MOV A,M  'GET ASCII
+0277   0119 7E          	MOV A,M
+0278   011A             ; 76: ASM:        OUT 00c3H  'SEND TO DISPLAY
+0279   011A D3 C3       	OUT 00c3H
+0280   011C             ; 77: ASM:        LXI H,hr  'POINT TO MEMORY LOCATION THAT HOLDS THE CURRENT HR
+0281   011C 21 E4 FE    	LXI H,0FEE4H
+0282   011F             ; 78: ASM:        MOV A,M  'GET BCD
+0283   011F 7E          	MOV A,M
+0284   0120             ; 79: ASM:        CALL BINASCII  'CALL BINARY TO ASCII CONVERSION
+0285   0120 CD 00 05    	CALL BINASCII
+0286   0123             ; 80: ASM:        LXI H,timeascii  'POINT TO MEMORY LOCATION THAT HOLDS THE TIME IN ASCII
+0287   0123 21 F8 FE    	LXI H,0FEF8H
+0288   0126             ; 81: ASM:        MOV A,M  'GET ASCII
+0289   0126 7E          	MOV A,M
+0290   0127             ; 82: ASM:        OUT 0083H  'SEND TO DISPLAY
+0291   0127 D3 83       	OUT 0083H
+0292   0129             ; 83: ASM:        INX H  'POINT TO NEXT ASCII CHAR
+0293   0129 23          	INX H
+0294   012A             ; 84: ASM:        MOV A,M  'GET ASCII
+0295   012A 7E          	MOV A,M
+0296   012B             ; 85: ASM:        OUT 0082H  'SEND TO DISPLAY
+0297   012B D3 82       	OUT 0082H
+0298   012D             ; 86: Poke $fff8, startclkupdate  'START THE RAM CLOCK UPDATE
+0299   012D 21 F8 FF    	LXI H,0FFF8H
+0300   0130 E5          	PUSH H
+0301   0131 21 FA FE    	LXI H,0FEFAH
+0302   0134 7E          	MOV A,M
+0303   0135 23          	INX H
+0304   0136 66          	MOV H,M
+0305   0137 6F          	MOV L,A
+0306   0138 7D          	MOV A,L
+0307   0139 D1          	POP D
+0308   013A 12          	STAX D
+0309   013B             ; 87: 
+0310   013B             ; 88: Else  'OUTPUT IN HEX
+0311   013B C3 9D 01    	JMP L0005
+0312   013E             L0004:	
+0313   013E             ; 89: ASM:        LXI H,sec  'POINT TO MEMORY LOCATION THAT HOLDS THE BCD FOR SEC
+0314   013E 21 E8 FE    	LXI H,0FEE8H
+0315   0141             ; 90: ASM:        LXI B,timebin  'POINT TO MEMORY LOCATION THAT WILL HOLD THE TIME IN BINARY
+0316   0141 01 F6 FE    	LXI B,0FEF6H
+0317   0144             ; 91: ASM:        MOV A,M  'GET BCD
+0318   0144 7E          	MOV A,M
+0319   0145             ; 92: ASM:        CALL BCDBIN  'CALL BINARY-CODED-DECIMAL TO BINARY CONVERSION
+0320   0145 CD E6 04    	CALL BCDBIN
+0321   0148             ; 93: ASM:        STAX B  'SAVE BINARY
+0322   0148 02          	STAX B
+0323   0149             ; 94: ASM:        LXI H,timebin  'POINT TO MEMORY LOCATION THAT HOLDS THE BIN FOR SEC
+0324   0149 21 F6 FE    	LXI H,0FEF6H
+0325   014C             ; 95: ASM:        CALL BINASCII  'CALL BINARY TO ASCII CONVERSION
+0326   014C CD 00 05    	CALL BINASCII
+0327   014F             ; 96: ASM:        LXI H,timeascii  'POINT TO MEMORY LOCATION THAT HOLDS THE TIME IN ASCII
+0328   014F 21 F8 FE    	LXI H,0FEF8H
+0329   0152             ; 97: ASM:        MOV A,M  'GET ASCII
+0330   0152 7E          	MOV A,M
+0331   0153             ; 98: ASM:        OUT 00c1H  'SEND TO DISPLAY
+0332   0153 D3 C1       	OUT 00c1H
+0333   0155             ; 99: ASM:        INX H  'POINT TO NEXT ASCII CHAR
+0334   0155 23          	INX H
+0335   0156             ; 100: ASM:        MOV A,M  'GET ASCII
+0336   0156 7E          	MOV A,M
+0337   0157             ; 101: ASM:        OUT 00c0H  'SEND TO DISPLAY
+0338   0157 D3 C0       	OUT 00c0H
+0339   0159             ; 102: 
+0340   0159             ; 103: 
+0341   0159             ; 104: ASM:        LXI H,min  'POINT TO MEMORY LOCATION THAT HOLDS THE BCD FOR MIN
+0342   0159 21 E6 FE    	LXI H,0FEE6H
+0343   015C             ; 105: ASM:        LXI B,timebin  'POINT TO MEMORY LOCATION THAT WILL HOLD THE TIME IN BINARY
+0344   015C 01 F6 FE    	LXI B,0FEF6H
+0345   015F             ; 106: ASM:        MOV A,M  'GET BCD
+0346   015F 7E          	MOV A,M
+0347   0160             ; 107: ASM:        CALL BCDBIN  'CALL BINARY-CODED-DECIMAL TO BINARY CONVERSION
+0348   0160 CD E6 04    	CALL BCDBIN
+0349   0163             ; 108: ASM:        STAX B  'SAVE BINARY
+0350   0163 02          	STAX B
+0351   0164             ; 109: ASM:        LXI H,timebin  'POINT TO MEMORY LOCATION THAT HOLDS THE BIN FOR SEC
+0352   0164 21 F6 FE    	LXI H,0FEF6H
+0353   0167             ; 110: ASM:        CALL BINASCII  'CALL BINARY TO ASCII CONVERSION
+0354   0167 CD 00 05    	CALL BINASCII
+0355   016A             ; 111: ASM:        LXI H,timeascii  'POINT TO MEMORY LOCATION THAT HOLDS THE TIME IN ASCII
+0356   016A 21 F8 FE    	LXI H,0FEF8H
+0357   016D             ; 112: ASM:        MOV A,M  'GET ASCII
+0358   016D 7E          	MOV A,M
+0359   016E             ; 113: ASM:        OUT 0080H  'SEND TO DISPLAY
+0360   016E D3 80       	OUT 0080H
+0361   0170             ; 114: ASM:        INX H  'POINT TO NEXT ASCII CHAR
+0362   0170 23          	INX H
+0363   0171             ; 115: ASM:        MOV A,M  'GET ASCII
+0364   0171 7E          	MOV A,M
+0365   0172             ; 116: ASM:        OUT 00c3H  'SEND TO DISPLAY
+0366   0172 D3 C3       	OUT 00c3H
+0367   0174             ; 117: 
+0368   0174             ; 118: 
+0369   0174             ; 119: ASM:        LXI H,hr  'POINT TO MEMORY LOCATION THAT HOLDS THE BCD FOR HR
+0370   0174 21 E4 FE    	LXI H,0FEE4H
+0371   0177             ; 120: ASM:        LXI B,timebin  'POINT TO MEMORY LOCATION THAT WILL HOLD THE TIME IN BINARY
+0372   0177 01 F6 FE    	LXI B,0FEF6H
+0373   017A             ; 121: ASM:        MOV A,M  'GET BCD
+0374   017A 7E          	MOV A,M
+0375   017B             ; 122: ASM:        CALL BCDBIN  'CALL BINARY-CODED-DECIMAL TO BINARY CONVERSION
+0376   017B CD E6 04    	CALL BCDBIN
+0377   017E             ; 123: ASM:        STAX B  'SAVE BINARY
+0378   017E 02          	STAX B
+0379   017F             ; 124: ASM:        LXI H,timebin  'POINT TO MEMORY LOCATION THAT HOLDS THE BIN FOR SEC
+0380   017F 21 F6 FE    	LXI H,0FEF6H
+0381   0182             ; 125: ASM:        CALL BINASCII  'CALL BINARY TO ASCII CONVERSION
+0382   0182 CD 00 05    	CALL BINASCII
+0383   0185             ; 126: ASM:        LXI H,timeascii  'POINT TO MEMORY LOCATION THAT HOLDS THE TIME IN ASCII
+0384   0185 21 F8 FE    	LXI H,0FEF8H
+0385   0188             ; 127: ASM:        MOV A,M  'GET ASCII
+0386   0188 7E          	MOV A,M
+0387   0189             ; 128: ASM:        OUT 0083H  'SEND TO DISPLAY
+0388   0189 D3 83       	OUT 0083H
+0389   018B             ; 129: ASM:        INX H  'POINT TO NEXT ASCII CHAR
+0390   018B 23          	INX H
+0391   018C             ; 130: ASM:        MOV A,M  'GET ASCII
+0392   018C 7E          	MOV A,M
+0393   018D             ; 131: ASM:        OUT 0082H  'SEND TO DISPLAY
+0394   018D D3 82       	OUT 0082H
+0395   018F             ; 132: Poke $fff8, startclkupdate  'START THE RAM CLOCK UPDATE
+0396   018F 21 F8 FF    	LXI H,0FFF8H
+0397   0192 E5          	PUSH H
+0398   0193 21 FA FE    	LXI H,0FEFAH
+0399   0196 7E          	MOV A,M
+0400   0197 23          	INX H
+0401   0198 66          	MOV H,M
+0402   0199 6F          	MOV L,A
+0403   019A 7D          	MOV A,L
+0404   019B D1          	POP D
+0405   019C 12          	STAX D
+0406   019D             ; 133: Endif
+0407   019D             L0005:	
+0408   019D             ; 134: 
+0409   019D             ; 135: 'CHECK HR BUTTON LOGIC
+0410   019D             ; 136: hrbutton = Get($43)  'SET VAR TO BUTTON INPUT FROM 8155 PC0
+0411   019D 21 E2 FE    	LXI H,0FEE2H
+0412   01A0 E5          	PUSH H
+0413   01A1 DB 43       	IN 43H
+0414   01A3 6F          	MOV L,A
+0415   01A4 26 00       	MVI H,00H
+0416   01A6 D1          	POP D
+0417   01A7 7D          	MOV A,L
+0418   01A8 12          	STAX D
+0419   01A9 13          	INX D
+0420   01AA 7C          	MOV A,H
+0421   01AB 12          	STAX D
+0422   01AC             ; 137: If hrbutton = 208 Then  'LOGIC, DETECT BUTTON PRESS
+0423   01AC 21 E2 FE    	LXI H,0FEE2H
+0424   01AF 7E          	MOV A,M
+0425   01B0 23          	INX H
+0426   01B1 66          	MOV H,M
+0427   01B2 6F          	MOV L,A
+0428   01B3 E5          	PUSH H
+0429   01B4 21 D0 00    	LXI H,00D0H
+0430   01B7 D1          	POP D
+0431   01B8 CD 4E 05    	CALL C001
+0432   01BB 7C          	MOV A,H
+0433   01BC B5          	ORA L
+0434   01BD CA B7 02    	JZ L0006
+0435   01C0             ; 138: Poke $fff8, write  'STOP RAM UPDATE TO PREVENT WRITING THE TIME WHILE THE CLOCK IS UPDATING THE RAM LOCATIONS.
+0436   01C0 21 F8 FF    	LXI H,0FFF8H
+0437   01C3 E5          	PUSH H
+0438   01C4 21 F2 FE    	LXI H,0FEF2H
+0439   01C7 7E          	MOV A,M
+0440   01C8 23          	INX H
+0441   01C9 66          	MOV H,M
+0442   01CA 6F          	MOV L,A
+0443   01CB 7D          	MOV A,L
+0444   01CC D1          	POP D
+0445   01CD 12          	STAX D
+0446   01CE             ; 139: addhr = Peek($fffb)  'GET HR
+0447   01CE 21 FC FE    	LXI H,0FEFCH
+0448   01D1 E5          	PUSH H
+0449   01D2 21 FB FF    	LXI H,0FFFBH
+0450   01D5 7E          	MOV A,M
+0451   01D6 6F          	MOV L,A
+0452   01D7 26 00       	MVI H,00H
+0453   01D9 D1          	POP D
+0454   01DA 7D          	MOV A,L
+0455   01DB 12          	STAX D
+0456   01DC 13          	INX D
+0457   01DD 7C          	MOV A,H
+0458   01DE 12          	STAX D
+0459   01DF             ; 140: addhr = addhr + 1  'INCRESE HR BY ONE
+0460   01DF 21 FC FE    	LXI H,0FEFCH
+0461   01E2 E5          	PUSH H
+0462   01E3 21 FC FE    	LXI H,0FEFCH
+0463   01E6 7E          	MOV A,M
+0464   01E7 23          	INX H
+0465   01E8 66          	MOV H,M
+0466   01E9 6F          	MOV L,A
+0467   01EA E5          	PUSH H
+0468   01EB 21 01 00    	LXI H,0001H
+0469   01EE D1          	POP D
+0470   01EF 19          	DAD D
+0471   01F0 D1          	POP D
+0472   01F1 7D          	MOV A,L
+0473   01F2 12          	STAX D
+0474   01F3 13          	INX D
+0475   01F4 7C          	MOV A,H
+0476   01F5 12          	STAX D
+0477   01F6             ; 141: If addhr = $000a Then  'CHECK FOR HEX AND ADJUST
+0478   01F6 21 FC FE    	LXI H,0FEFCH
+0479   01F9 7E          	MOV A,M
+0480   01FA 23          	INX H
+0481   01FB 66          	MOV H,M
+0482   01FC 6F          	MOV L,A
+0483   01FD E5          	PUSH H
+0484   01FE 21 0A 00    	LXI H,000AH
+0485   0201 D1          	POP D
+0486   0202 CD 4E 05    	CALL C001
+0487   0205 7C          	MOV A,H
+0488   0206 B5          	ORA L
+0489   0207 CA 21 02    	JZ L0007
+0490   020A             ; 142: addhr = addhr + 6
+0491   020A 21 FC FE    	LXI H,0FEFCH
+0492   020D E5          	PUSH H
+0493   020E 21 FC FE    	LXI H,0FEFCH
+0494   0211 7E          	MOV A,M
+0495   0212 23          	INX H
+0496   0213 66          	MOV H,M
+0497   0214 6F          	MOV L,A
+0498   0215 E5          	PUSH H
+0499   0216 21 06 00    	LXI H,0006H
+0500   0219 D1          	POP D
+0501   021A 19          	DAD D
+0502   021B D1          	POP D
+0503   021C 7D          	MOV A,L
+0504   021D 12          	STAX D
+0505   021E 13          	INX D
+0506   021F 7C          	MOV A,H
+0507   0220 12          	STAX D
+0508   0221             ; 143: Endif
+0509   0221             L0007:	
+0510   0221             ; 144: If addhr = $001a Then  'CHECK FOR HEX AND ADJUST
+0511   0221 21 FC FE    	LXI H,0FEFCH
+0512   0224 7E          	MOV A,M
+0513   0225 23          	INX H
+0514   0226 66          	MOV H,M
+0515   0227 6F          	MOV L,A
+0516   0228 E5          	PUSH H
+0517   0229 21 1A 00    	LXI H,001AH
+0518   022C D1          	POP D
+0519   022D CD 4E 05    	CALL C001
+0520   0230 7C          	MOV A,H
+0521   0231 B5          	ORA L
+0522   0232 CA 4C 02    	JZ L0008
+0523   0235             ; 145: addhr = addhr + 6
+0524   0235 21 FC FE    	LXI H,0FEFCH
+0525   0238 E5          	PUSH H
+0526   0239 21 FC FE    	LXI H,0FEFCH
+0527   023C 7E          	MOV A,M
+0528   023D 23          	INX H
+0529   023E 66          	MOV H,M
+0530   023F 6F          	MOV L,A
+0531   0240 E5          	PUSH H
+0532   0241 21 06 00    	LXI H,0006H
+0533   0244 D1          	POP D
+0534   0245 19          	DAD D
+0535   0246 D1          	POP D
+0536   0247 7D          	MOV A,L
+0537   0248 12          	STAX D
+0538   0249 13          	INX D
+0539   024A 7C          	MOV A,H
+0540   024B 12          	STAX D
+0541   024C             ; 146: Endif
+0542   024C             L0008:	
+0543   024C             ; 147: If addhr = $002a Then  'CHECK FOR HEX AND ADJUST
+0544   024C 21 FC FE    	LXI H,0FEFCH
+0545   024F 7E          	MOV A,M
+0546   0250 23          	INX H
+0547   0251 66          	MOV H,M
+0548   0252 6F          	MOV L,A
+0549   0253 E5          	PUSH H
+0550   0254 21 2A 00    	LXI H,002AH
+0551   0257 D1          	POP D
+0552   0258 CD 4E 05    	CALL C001
+0553   025B 7C          	MOV A,H
+0554   025C B5          	ORA L
+0555   025D CA 77 02    	JZ L0009
+0556   0260             ; 148: addhr = addhr + 6
+0557   0260 21 FC FE    	LXI H,0FEFCH
+0558   0263 E5          	PUSH H
+0559   0264 21 FC FE    	LXI H,0FEFCH
+0560   0267 7E          	MOV A,M
+0561   0268 23          	INX H
+0562   0269 66          	MOV H,M
+0563   026A 6F          	MOV L,A
+0564   026B E5          	PUSH H
+0565   026C 21 06 00    	LXI H,0006H
+0566   026F D1          	POP D
+0567   0270 19          	DAD D
+0568   0271 D1          	POP D
+0569   0272 7D          	MOV A,L
+0570   0273 12          	STAX D
+0571   0274 13          	INX D
+0572   0275 7C          	MOV A,H
+0573   0276 12          	STAX D
+0574   0277             ; 149: Endif
+0575   0277             L0009:	
+0576   0277             ; 150: If addhr = $0024 Then  'LOGIC TO KEEP THE USER FROM SETTING THE OUTPUT TO A VALUE OUTSIDE A VALID CLOCK VALUE
+0577   0277 21 FC FE    	LXI H,0FEFCH
+0578   027A 7E          	MOV A,M
+0579   027B 23          	INX H
+0580   027C 66          	MOV H,M
+0581   027D 6F          	MOV L,A
+0582   027E E5          	PUSH H
+0583   027F 21 24 00    	LXI H,0024H
+0584   0282 D1          	POP D
+0585   0283 CD 4E 05    	CALL C001
+0586   0286 7C          	MOV A,H
+0587   0287 B5          	ORA L
+0588   0288 CA 98 02    	JZ L0010
+0589   028B             ; 151: addhr = $00  'IF LOGIC ABOVE = TRUE THEN SET HR TO 00
+0590   028B 21 FC FE    	LXI H,0FEFCH
+0591   028E E5          	PUSH H
+0592   028F 21 00 00    	LXI H,0000H
+0593   0292 D1          	POP D
+0594   0293 7D          	MOV A,L
+0595   0294 12          	STAX D
+0596   0295 13          	INX D
+0597   0296 7C          	MOV A,H
+0598   0297 12          	STAX D
+0599   0298             ; 152: 'Goto clockmain
+0600   0298             ; 153: Endif
+0601   0298             L0010:	
+0602   0298             ; 154: Poke $fffb, addhr  'PLACE NEW HR TO RAM LOCATION
+0603   0298 21 FB FF    	LXI H,0FFFBH
+0604   029B E5          	PUSH H
+0605   029C 21 FC FE    	LXI H,0FEFCH
+0606   029F 7E          	MOV A,M
+0607   02A0 23          	INX H
+0608   02A1 66          	MOV H,M
+0609   02A2 6F          	MOV L,A
+0610   02A3 7D          	MOV A,L
+0611   02A4 D1          	POP D
+0612   02A5 12          	STAX D
+0613   02A6             ; 155: Poke $fff8, startclkupdate  'RESTART THE CLOCK
+0614   02A6 21 F8 FF    	LXI H,0FFF8H
+0615   02A9 E5          	PUSH H
+0616   02AA 21 FA FE    	LXI H,0FEFAH
+0617   02AD 7E          	MOV A,M
+0618   02AE 23          	INX H
+0619   02AF 66          	MOV H,M
+0620   02B0 6F          	MOV L,A
+0621   02B1 7D          	MOV A,L
+0622   02B2 D1          	POP D
+0623   02B3 12          	STAX D
+0624   02B4             ; 156: 'WAIT FOR BOUNCE PREVENTION
+0625   02B4             ; 157: Gosub wait
+0626   02B4 CD 71 04    	CALL L0002
+0627   02B7             ; 158: Endif
+0628   02B7             L0006:	
+0629   02B7             ; 159: 
+0630   02B7             ; 160: 'CHECK MIN BUTTON LOGIC
+0631   02B7             ; 161: minbutton = Get($43)  'SET VAR TO BUTTON INPUT FROM 8155 PC1
+0632   02B7 21 E0 FE    	LXI H,0FEE0H
+0633   02BA E5          	PUSH H
+0634   02BB DB 43       	IN 43H
+0635   02BD 6F          	MOV L,A
+0636   02BE 26 00       	MVI H,00H
+0637   02C0 D1          	POP D
+0638   02C1 7D          	MOV A,L
+0639   02C2 12          	STAX D
+0640   02C3 13          	INX D
+0641   02C4 7C          	MOV A,H
+0642   02C5 12          	STAX D
+0643   02C6             ; 162: If minbutton = 200 Then  'LOGIC, DETECT BUTTON PRESS
+0644   02C6 21 E0 FE    	LXI H,0FEE0H
+0645   02C9 7E          	MOV A,M
+0646   02CA 23          	INX H
+0647   02CB 66          	MOV H,M
+0648   02CC 6F          	MOV L,A
+0649   02CD E5          	PUSH H
+0650   02CE 21 C8 00    	LXI H,00C8H
+0651   02D1 D1          	POP D
+0652   02D2 CD 4E 05    	CALL C001
+0653   02D5 7C          	MOV A,H
+0654   02D6 B5          	ORA L
+0655   02D7 CA 5C 04    	JZ L0011
+0656   02DA             ; 163: Poke $fff8, write  'STOP RAM UPDATE TO PREVENT WRITING THE TIME WHILE THE CLOCK IS UPDATING THE RAM LOCATIONS.
+0657   02DA 21 F8 FF    	LXI H,0FFF8H
+0658   02DD E5          	PUSH H
+0659   02DE 21 F2 FE    	LXI H,0FEF2H
+0660   02E1 7E          	MOV A,M
+0661   02E2 23          	INX H
+0662   02E3 66          	MOV H,M
+0663   02E4 6F          	MOV L,A
+0664   02E5 7D          	MOV A,L
+0665   02E6 D1          	POP D
+0666   02E7 12          	STAX D
+0667   02E8             ; 164: Poke $fff9, $0000  'WRITE 00 TO THE SEC LOCATION.
+0668   02E8 21 F9 FF    	LXI H,0FFF9H
+0669   02EB E5          	PUSH H
+0670   02EC 21 00 00    	LXI H,0000H
+0671   02EF 7D          	MOV A,L
+0672   02F0 D1          	POP D
+0673   02F1 12          	STAX D
+0674   02F2             ; 165: addmin = Peek($fffa)  'GET MIN
+0675   02F2 21 FE FE    	LXI H,0FEFEH
+0676   02F5 E5          	PUSH H
+0677   02F6 21 FA FF    	LXI H,0FFFAH
+0678   02F9 7E          	MOV A,M
+0679   02FA 6F          	MOV L,A
+0680   02FB 26 00       	MVI H,00H
+0681   02FD D1          	POP D
+0682   02FE 7D          	MOV A,L
+0683   02FF 12          	STAX D
+0684   0300 13          	INX D
+0685   0301 7C          	MOV A,H
+0686   0302 12          	STAX D
+0687   0303             ; 166: addmin = addmin + 1  'INCRESE MIN BY ONE
+0688   0303 21 FE FE    	LXI H,0FEFEH
+0689   0306 E5          	PUSH H
+0690   0307 21 FE FE    	LXI H,0FEFEH
+0691   030A 7E          	MOV A,M
+0692   030B 23          	INX H
+0693   030C 66          	MOV H,M
+0694   030D 6F          	MOV L,A
+0695   030E E5          	PUSH H
+0696   030F 21 01 00    	LXI H,0001H
+0697   0312 D1          	POP D
+0698   0313 19          	DAD D
+0699   0314 D1          	POP D
+0700   0315 7D          	MOV A,L
+0701   0316 12          	STAX D
+0702   0317 13          	INX D
+0703   0318 7C          	MOV A,H
+0704   0319 12          	STAX D
+0705   031A             ; 167: If addmin = $000a Then  'CHECK FOR HEX AND ADJUST
+0706   031A 21 FE FE    	LXI H,0FEFEH
+0707   031D 7E          	MOV A,M
+0708   031E 23          	INX H
+0709   031F 66          	MOV H,M
+0710   0320 6F          	MOV L,A
+0711   0321 E5          	PUSH H
+0712   0322 21 0A 00    	LXI H,000AH
+0713   0325 D1          	POP D
+0714   0326 CD 4E 05    	CALL C001
+0715   0329 7C          	MOV A,H
+0716   032A B5          	ORA L
+0717   032B CA 45 03    	JZ L0012
+0718   032E             ; 168: addmin = addmin + 6
+0719   032E 21 FE FE    	LXI H,0FEFEH
+0720   0331 E5          	PUSH H
+0721   0332 21 FE FE    	LXI H,0FEFEH
+0722   0335 7E          	MOV A,M
+0723   0336 23          	INX H
+0724   0337 66          	MOV H,M
+0725   0338 6F          	MOV L,A
+0726   0339 E5          	PUSH H
+0727   033A 21 06 00    	LXI H,0006H
+0728   033D D1          	POP D
+0729   033E 19          	DAD D
+0730   033F D1          	POP D
+0731   0340 7D          	MOV A,L
+0732   0341 12          	STAX D
+0733   0342 13          	INX D
+0734   0343 7C          	MOV A,H
+0735   0344 12          	STAX D
+0736   0345             ; 169: Endif
+0737   0345             L0012:	
+0738   0345             ; 170: If addmin = $001a Then  'CHECK FOR HEX AND ADJUST
+0739   0345 21 FE FE    	LXI H,0FEFEH
+0740   0348 7E          	MOV A,M
+0741   0349 23          	INX H
+0742   034A 66          	MOV H,M
+0743   034B 6F          	MOV L,A
+0744   034C E5          	PUSH H
+0745   034D 21 1A 00    	LXI H,001AH
+0746   0350 D1          	POP D
+0747   0351 CD 4E 05    	CALL C001
+0748   0354 7C          	MOV A,H
+0749   0355 B5          	ORA L
+0750   0356 CA 70 03    	JZ L0013
+0751   0359             ; 171: addmin = addmin + 6
+0752   0359 21 FE FE    	LXI H,0FEFEH
+0753   035C E5          	PUSH H
+0754   035D 21 FE FE    	LXI H,0FEFEH
+0755   0360 7E          	MOV A,M
+0756   0361 23          	INX H
+0757   0362 66          	MOV H,M
+0758   0363 6F          	MOV L,A
+0759   0364 E5          	PUSH H
+0760   0365 21 06 00    	LXI H,0006H
+0761   0368 D1          	POP D
+0762   0369 19          	DAD D
+0763   036A D1          	POP D
+0764   036B 7D          	MOV A,L
+0765   036C 12          	STAX D
+0766   036D 13          	INX D
+0767   036E 7C          	MOV A,H
+0768   036F 12          	STAX D
+0769   0370             ; 172: Endif
+0770   0370             L0013:	
+0771   0370             ; 173: If addmin = $002a Then  'CHECK FOR HEX AND ADJUST
+0772   0370 21 FE FE    	LXI H,0FEFEH
+0773   0373 7E          	MOV A,M
+0774   0374 23          	INX H
+0775   0375 66          	MOV H,M
+0776   0376 6F          	MOV L,A
+0777   0377 E5          	PUSH H
+0778   0378 21 2A 00    	LXI H,002AH
+0779   037B D1          	POP D
+0780   037C CD 4E 05    	CALL C001
+0781   037F 7C          	MOV A,H
+0782   0380 B5          	ORA L
+0783   0381 CA 9B 03    	JZ L0014
+0784   0384             ; 174: addmin = addmin + 6
+0785   0384 21 FE FE    	LXI H,0FEFEH
+0786   0387 E5          	PUSH H
+0787   0388 21 FE FE    	LXI H,0FEFEH
+0788   038B 7E          	MOV A,M
+0789   038C 23          	INX H
+0790   038D 66          	MOV H,M
+0791   038E 6F          	MOV L,A
+0792   038F E5          	PUSH H
+0793   0390 21 06 00    	LXI H,0006H
+0794   0393 D1          	POP D
+0795   0394 19          	DAD D
+0796   0395 D1          	POP D
+0797   0396 7D          	MOV A,L
+0798   0397 12          	STAX D
+0799   0398 13          	INX D
+0800   0399 7C          	MOV A,H
+0801   039A 12          	STAX D
+0802   039B             ; 175: Endif
+0803   039B             L0014:	
+0804   039B             ; 176: If addmin = $003a Then  'CHECK FOR HEX AND ADJUST
+0805   039B 21 FE FE    	LXI H,0FEFEH
+0806   039E 7E          	MOV A,M
+0807   039F 23          	INX H
+0808   03A0 66          	MOV H,M
+0809   03A1 6F          	MOV L,A
+0810   03A2 E5          	PUSH H
+0811   03A3 21 3A 00    	LXI H,003AH
+0812   03A6 D1          	POP D
+0813   03A7 CD 4E 05    	CALL C001
+0814   03AA 7C          	MOV A,H
+0815   03AB B5          	ORA L
+0816   03AC CA C6 03    	JZ L0015
+0817   03AF             ; 177: addmin = addmin + 6
+0818   03AF 21 FE FE    	LXI H,0FEFEH
+0819   03B2 E5          	PUSH H
+0820   03B3 21 FE FE    	LXI H,0FEFEH
+0821   03B6 7E          	MOV A,M
+0822   03B7 23          	INX H
+0823   03B8 66          	MOV H,M
+0824   03B9 6F          	MOV L,A
+0825   03BA E5          	PUSH H
+0826   03BB 21 06 00    	LXI H,0006H
+0827   03BE D1          	POP D
+0828   03BF 19          	DAD D
+0829   03C0 D1          	POP D
+0830   03C1 7D          	MOV A,L
+0831   03C2 12          	STAX D
+0832   03C3 13          	INX D
+0833   03C4 7C          	MOV A,H
+0834   03C5 12          	STAX D
+0835   03C6             ; 178: Endif
+0836   03C6             L0015:	
+0837   03C6             ; 179: If addmin = $004a Then  'CHECK FOR HEX AND ADJUST
+0838   03C6 21 FE FE    	LXI H,0FEFEH
+0839   03C9 7E          	MOV A,M
+0840   03CA 23          	INX H
+0841   03CB 66          	MOV H,M
+0842   03CC 6F          	MOV L,A
+0843   03CD E5          	PUSH H
+0844   03CE 21 4A 00    	LXI H,004AH
+0845   03D1 D1          	POP D
+0846   03D2 CD 4E 05    	CALL C001
+0847   03D5 7C          	MOV A,H
+0848   03D6 B5          	ORA L
+0849   03D7 CA F1 03    	JZ L0016
+0850   03DA             ; 180: addmin = addmin + 6
+0851   03DA 21 FE FE    	LXI H,0FEFEH
+0852   03DD E5          	PUSH H
+0853   03DE 21 FE FE    	LXI H,0FEFEH
+0854   03E1 7E          	MOV A,M
+0855   03E2 23          	INX H
+0856   03E3 66          	MOV H,M
+0857   03E4 6F          	MOV L,A
+0858   03E5 E5          	PUSH H
+0859   03E6 21 06 00    	LXI H,0006H
+0860   03E9 D1          	POP D
+0861   03EA 19          	DAD D
+0862   03EB D1          	POP D
+0863   03EC 7D          	MOV A,L
+0864   03ED 12          	STAX D
+0865   03EE 13          	INX D
+0866   03EF 7C          	MOV A,H
+0867   03F0 12          	STAX D
+0868   03F1             ; 181: Endif
+0869   03F1             L0016:	
+0870   03F1             ; 182: If addmin = $005a Then  'CHECK FOR HEX AND ADJUST
+0871   03F1 21 FE FE    	LXI H,0FEFEH
+0872   03F4 7E          	MOV A,M
+0873   03F5 23          	INX H
+0874   03F6 66          	MOV H,M
+0875   03F7 6F          	MOV L,A
+0876   03F8 E5          	PUSH H
+0877   03F9 21 5A 00    	LXI H,005AH
+0878   03FC D1          	POP D
+0879   03FD CD 4E 05    	CALL C001
+0880   0400 7C          	MOV A,H
+0881   0401 B5          	ORA L
+0882   0402 CA 1C 04    	JZ L0017
+0883   0405             ; 183: addmin = addmin + 6
+0884   0405 21 FE FE    	LXI H,0FEFEH
+0885   0408 E5          	PUSH H
+0886   0409 21 FE FE    	LXI H,0FEFEH
+0887   040C 7E          	MOV A,M
+0888   040D 23          	INX H
+0889   040E 66          	MOV H,M
+0890   040F 6F          	MOV L,A
+0891   0410 E5          	PUSH H
+0892   0411 21 06 00    	LXI H,0006H
+0893   0414 D1          	POP D
+0894   0415 19          	DAD D
+0895   0416 D1          	POP D
+0896   0417 7D          	MOV A,L
+0897   0418 12          	STAX D
+0898   0419 13          	INX D
+0899   041A 7C          	MOV A,H
+0900   041B 12          	STAX D
+0901   041C             ; 184: Endif
+0902   041C             L0017:	
+0903   041C             ; 185: If addmin = $0060 Then  'LOGIC TO KEEP THE USER FROM SETTING THE OUTPUT TO A VALUE OUTSIDE A VALID CLOCK VALUE
+0904   041C 21 FE FE    	LXI H,0FEFEH
+0905   041F 7E          	MOV A,M
+0906   0420 23          	INX H
+0907   0421 66          	MOV H,M
+0908   0422 6F          	MOV L,A
+0909   0423 E5          	PUSH H
+0910   0424 21 60 00    	LXI H,0060H
+0911   0427 D1          	POP D
+0912   0428 CD 4E 05    	CALL C001
+0913   042B 7C          	MOV A,H
+0914   042C B5          	ORA L
+0915   042D CA 3D 04    	JZ L0018
+0916   0430             ; 186: addmin = $00  'IF LOGIC ABOVE = TRUE THEN SET MIN TO 00
+0917   0430 21 FE FE    	LXI H,0FEFEH
+0918   0433 E5          	PUSH H
+0919   0434 21 00 00    	LXI H,0000H
+0920   0437 D1          	POP D
+0921   0438 7D          	MOV A,L
+0922   0439 12          	STAX D
+0923   043A 13          	INX D
+0924   043B 7C          	MOV A,H
+0925   043C 12          	STAX D
+0926   043D             ; 187: Endif
+0927   043D             L0018:	
+0928   043D             ; 188: Poke $fffa, addmin  'PLACE NEW MIN TO RAM LOCATION
+0929   043D 21 FA FF    	LXI H,0FFFAH
+0930   0440 E5          	PUSH H
+0931   0441 21 FE FE    	LXI H,0FEFEH
+0932   0444 7E          	MOV A,M
+0933   0445 23          	INX H
+0934   0446 66          	MOV H,M
+0935   0447 6F          	MOV L,A
+0936   0448 7D          	MOV A,L
+0937   0449 D1          	POP D
+0938   044A 12          	STAX D
+0939   044B             ; 189: Poke $fff8, startclkupdate  'RESTART THE CLOCK UPDATING
+0940   044B 21 F8 FF    	LXI H,0FFF8H
+0941   044E E5          	PUSH H
+0942   044F 21 FA FE    	LXI H,0FEFAH
+0943   0452 7E          	MOV A,M
+0944   0453 23          	INX H
+0945   0454 66          	MOV H,M
+0946   0455 6F          	MOV L,A
+0947   0456 7D          	MOV A,L
+0948   0457 D1          	POP D
+0949   0458 12          	STAX D
+0950   0459             ; 190: ''WAIT FOR BOUNCE PREVENTION
+0951   0459             ; 191: Gosub wait
+0952   0459 CD 71 04    	CALL L0002
+0953   045C             ; 192: Endif
+0954   045C             L0011:	
+0955   045C             ; 193: 
+0956   045C             ; 194: Poke $fff8, startclkupdate  'RESTART THE CLOCK UPDATING
+0957   045C 21 F8 FF    	LXI H,0FFF8H
+0958   045F E5          	PUSH H
+0959   0460 21 FA FE    	LXI H,0FEFAH
+0960   0463 7E          	MOV A,M
+0961   0464 23          	INX H
+0962   0465 66          	MOV H,M
+0963   0466 6F          	MOV L,A
+0964   0467 7D          	MOV A,L
+0965   0468 D1          	POP D
+0966   0469 12          	STAX D
+0967   046A             ; 195: Gosub wait
+0968   046A CD 71 04    	CALL L0002
+0969   046D             ; 196: Goto clockmain  'goto begining
+0970   046D C3 86 00    	JMP L0001
+0971   0470             ; 197: End
+0972   0470 76          	HLT
+0973   0471             ; 198: 
+0974   0471             ; 199: wait:  'TIMER IS BASED OFF THE CPU CLOCK!!!!!!
+0975   0471             L0002:	
+0976   0471             ; 200: For outcounter = 0 To outtime
+0977   0471 21 EE FE    	LXI H,0FEEEH
+0978   0474 E5          	PUSH H
+0979   0475 21 00 00    	LXI H,0000H
+0980   0478 D1          	POP D
+0981   0479 7D          	MOV A,L
+0982   047A 12          	STAX D
+0983   047B 13          	INX D
+0984   047C 7C          	MOV A,H
+0985   047D 12          	STAX D
+0986   047E             L0019:	
+0987   047E 21 EE FE    	LXI H,0FEEEH
+0988   0481 7E          	MOV A,M
+0989   0482 23          	INX H
+0990   0483 66          	MOV H,M
+0991   0484 6F          	MOV L,A
+0992   0485 E5          	PUSH H
+0993   0486 21 EA FE    	LXI H,0FEEAH
+0994   0489 7E          	MOV A,M
+0995   048A 23          	INX H
+0996   048B 66          	MOV H,M
+0997   048C 6F          	MOV L,A
+0998   048D D1          	POP D
+0999   048E CD 6D 05    	CALL C006
+1000   0491 7C          	MOV A,H
+1001   0492 B5          	ORA L
+1002   0493 CA E5 04    	JZ L0020
+1003   0496             ; 201: For incounter = 0 To intime
+1004   0496 21 F0 FE    	LXI H,0FEF0H
+1005   0499 E5          	PUSH H
+1006   049A 21 00 00    	LXI H,0000H
+1007   049D D1          	POP D
+1008   049E 7D          	MOV A,L
+1009   049F 12          	STAX D
+1010   04A0 13          	INX D
+1011   04A1 7C          	MOV A,H
+1012   04A2 12          	STAX D
+1013   04A3             L0021:	
+1014   04A3 21 F0 FE    	LXI H,0FEF0H
+1015   04A6 7E          	MOV A,M
+1016   04A7 23          	INX H
+1017   04A8 66          	MOV H,M
+1018   04A9 6F          	MOV L,A
+1019   04AA E5          	PUSH H
+1020   04AB 21 EC FE    	LXI H,0FEECH
+1021   04AE 7E          	MOV A,M
+1022   04AF 23          	INX H
+1023   04B0 66          	MOV H,M
+1024   04B1 6F          	MOV L,A
+1025   04B2 D1          	POP D
+1026   04B3 CD 6D 05    	CALL C006
+1027   04B6 7C          	MOV A,H
+1028   04B7 B5          	ORA L
+1029   04B8 CA D0 04    	JZ L0022
+1030   04BB             ; 202: Next incounter
+1031   04BB 21 F0 FE    	LXI H,0FEF0H
+1032   04BE E5          	PUSH H
+1033   04BF 21 F0 FE    	LXI H,0FEF0H
+1034   04C2 7E          	MOV A,M
+1035   04C3 23          	INX H
+1036   04C4 66          	MOV H,M
+1037   04C5 6F          	MOV L,A
+1038   04C6 D1          	POP D
+1039   04C7 23          	INX H
+1040   04C8 7D          	MOV A,L
+1041   04C9 12          	STAX D
+1042   04CA 13          	INX D
+1043   04CB 7C          	MOV A,H
+1044   04CC 12          	STAX D
+1045   04CD C3 A3 04    	JMP L0021
+1046   04D0             L0022:	
+1047   04D0             ; 203: Next outcounter
+1048   04D0 21 EE FE    	LXI H,0FEEEH
+1049   04D3 E5          	PUSH H
+1050   04D4 21 EE FE    	LXI H,0FEEEH
+1051   04D7 7E          	MOV A,M
+1052   04D8 23          	INX H
+1053   04D9 66          	MOV H,M
+1054   04DA 6F          	MOV L,A
+1055   04DB D1          	POP D
+1056   04DC 23          	INX H
+1057   04DD 7D          	MOV A,L
+1058   04DE 12          	STAX D
+1059   04DF 13          	INX D
+1060   04E0 7C          	MOV A,H
+1061   04E1 12          	STAX D
+1062   04E2 C3 7E 04    	JMP L0019
+1063   04E5             L0020:	
+1064   04E5             ; 204: Return
+1065   04E5 C9          	RET
+1066   04E6             ; 205: 
+1067   04E6             ; 206: 
+1068   04E6             ; 207: '*****************************************************GLOBAL FUNCTIONS*****************************************************
+1069   04E6             ; 208: ASM:BCDBIN:
+1070   04E6             BCDBIN:	
+1071   04E6             ; 209: ASM:        PUSH B  'SAVE BC REG
+1072   04E6 C5          	PUSH B
+1073   04E7             ; 210: ASM:        PUSH D  'SAVE DE REG
+1074   04E7 D5          	PUSH D
+1075   04E8             ; 211: ASM:        MOV B,A  'SAVE BCD
+1076   04E8 47          	MOV B,A
+1077   04E9             ; 212: ASM:        ANI 000FH  'MASK MOST SIGNIFICANT FOUR BITS
+1078   04E9 E6 0F       	ANI 000FH
+1079   04EB             ; 213: ASM:        MOV C,A  'SAVE UNPACKED BCD IN C REG
+1080   04EB 4F          	MOV C,A
+1081   04EC             ; 214: ASM:        MOV A,B  'GET BCD AGAIN
+1082   04EC 78          	MOV A,B
+1083   04ED             ; 215: ASM:        ANI 00F0H  'MASK LEAST SIGNIFICANT FOUR BITS
+1084   04ED E6 F0       	ANI 00F0H
+1085   04EF             ; 216: ASM:        RRC  'CONVERT MOST SIGNIFICANT FOUR BITS INTO UNPACKED BCD
+1086   04EF 0F          	RRC
+1087   04F0             ; 217: ASM:        RRC
+1088   04F0 0F          	RRC
+1089   04F1             ; 218: ASM:        RRC
+1090   04F1 0F          	RRC
+1091   04F2             ; 219: ASM:        RRC
+1092   04F2 0F          	RRC
+1093   04F3             ; 220: ASM:        MOV D,A  'SAVE BCD
+1094   04F3 57          	MOV D,A
+1095   04F4             ; 221: ASM:        XRA A  'CLEAR ACCUMULATOR
+1096   04F4 AF          	XRA A
+1097   04F5             ; 222: ASM:        MVI E,10  'SET E AS MULTIPLIER OF 10
+1098   04F5 1E 0A       	MVI E,10
+1099   04F7             ; 223: ASM:SUM:
+1100   04F7             SUM:	
+1101   04F7             ; 224: ASM:        ADD E  'ADD 10 UNTIL D = 0
+1102   04F7 83          	ADD E
+1103   04F8             ; 225: ASM:        DCR D  'REDUCE BCD BY ONE
+1104   04F8 15          	DCR D
+1105   04F9             ; 226: ASM:        JNZ SUM  'IS MULTIPLICATION COMPLETE?
+1106   04F9 C2 F7 04    	JNZ SUM
+1107   04FC             ; 227: ASM:        ADD C  'ADD BCD
+1108   04FC 81          	ADD C
+1109   04FD             ; 228: ASM:        POP D  'RETRIEVE PREVIOUS CONTENTS
+1110   04FD D1          	POP D
+1111   04FE             ; 229: ASM:        POP B
+1112   04FE C1          	POP B
+1113   04FF             ; 230: ASM:        RET  'RETURN
+1114   04FF C9          	RET
+1115   0500             ; 231: 
+1116   0500             ; 232: ASM:BINASCII
+1117   0500             BINASCII:	
+1118   0500             ; 233: 'ASM:        LXI H,timebin  'POINT TO WHERE BINARY NUMBER IS STORED
+1119   0500             ; 234: ASM:        LXI D,timeascii  'POINT INDEX TO WHERE ASCII CODE IS TO BE STORED
+1120   0500 11 F8 FE    	LXI D,0FEF8H
+1121   0503             ; 235: ASM:        MOV A,M  'GET BYTE
+1122   0503 7E          	MOV A,M
+1123   0504             ; 236: ASM:        MOV B,A  'SAVE BYTE
+1124   0504 47          	MOV B,A
+1125   0505             ; 237: ASM:        RRC  'ROTATE FOUR TIMES TO PLACE THE FOUR HIGH ORDER BITS OF THE SELECTED BYTE IN THE LOW ORDER LOCATION
+1126   0505 0F          	RRC
+1127   0506             ; 238: ASM:        RRC
+1128   0506 0F          	RRC
+1129   0507             ; 239: ASM:        RRC
+1130   0507 0F          	RRC
+1131   0508             ; 240: ASM:        RRC
+1132   0508 0F          	RRC
+1133   0509             ; 241: ASM:        CALL ASCII  'CALL ASCII CONVERSION
+1134   0509 CD 14 05    	CALL ASCII
+1135   050C             ; 242: ASM:        STAX D  'SAVE FIRST ASCII HEX
+1136   050C 12          	STAX D
+1137   050D             ; 243: ASM:        INX D  'POINT TO NEXT MEMORY LOCATION
+1138   050D 13          	INX D
+1139   050E             ; 244: ASM:        MOV A,B  'GET BYTE
+1140   050E 78          	MOV A,B
+1141   050F             ; 245: ASM:        CALL ASCII  'CALL ASCII CONVERSION
+1142   050F CD 14 05    	CALL ASCII
+1143   0512             ; 246: ASM:        STAX D  'SAVE NEXT ASCII HEX
+1144   0512 12          	STAX D
+1145   0513             ; 247: ASM:        RET  'RETURN
+1146   0513 C9          	RET
+1147   0514             ; 248: ASM:ASCII:
+1148   0514             ASCII:	
+1149   0514             ; 249: ASM:        ANI 000FH  'MASK HIGH-ORDER NIBBLE
+1150   0514 E6 0F       	ANI 000FH
+1151   0516             ; 250: ASM:        CPI 000AH  'IS DIGIT LESS THAN 10^10?
+1152   0516 FE 0A       	CPI 000AH
+1153   0518             ; 251: ASM:        JC CODE  'IF YES GOTO CODE TO ADD 30H
+1154   0518 DA 1D 05    	JC CODE
+1155   051B             ; 252: ASM:        ADI 0007H  'ELSE ADD 07H TO GET A - F CHAR
+1156   051B C6 07       	ADI 0007H
+1157   051D             ; 253: ASM:CODE:
+1158   051D             CODE:	
+1159   051D             ; 254: ASM:        ADI 0030H  'ADD 30H AS A DEC.
+1160   051D C6 30       	ADI 0030H
+1161   051F             ; 255: ASM:        RET  'RETURN
+1162   051F C9          	RET
+1163   0520             ; 256: 
+1164   0520             ; 257: clear:
+1165   0520             L0003:	
+1166   0520             ; 258: Put $83, $20
+1167   0520 3E 20       	MVI A,20H
+1168   0522 D3 83       	OUT 83H
+1169   0524             ; 259: Put $82, $20
+1170   0524 3E 20       	MVI A,20H
+1171   0526 D3 82       	OUT 82H
+1172   0528             ; 260: Put $81, $20
+1173   0528 3E 20       	MVI A,20H
+1174   052A D3 81       	OUT 81H
+1175   052C             ; 261: Put $80, $20
+1176   052C 3E 20       	MVI A,20H
+1177   052E D3 80       	OUT 80H
+1178   0530             ; 262: Put $c3, $20
+1179   0530 3E 20       	MVI A,20H
+1180   0532 D3 C3       	OUT 0C3H
+1181   0534             ; 263: Put $c2, $20
+1182   0534 3E 20       	MVI A,20H
+1183   0536 D3 C2       	OUT 0C2H
+1184   0538             ; 264: Put $c1, $20
+1185   0538 3E 20       	MVI A,20H
+1186   053A D3 C1       	OUT 0C1H
+1187   053C             ; 265: Put $c0, $20
+1188   053C 3E 20       	MVI A,20H
+1189   053E D3 C0       	OUT 0C0H
+1190   0540             ; 266: Put $81, $3a  'place : for clock
+1191   0540 3E 3A       	MVI A,3AH
+1192   0542 D3 81       	OUT 81H
+1193   0544             ; 267: Put $c2, $3a  'place : for clock
+1194   0544 3E 3A       	MVI A,3AH
+1195   0546 D3 C2       	OUT 0C2H
+1196   0548             ; 268: Put $41, $00  'clear led 8155
+1197   0548 3E 00       	MVI A,00H
+1198   054A D3 41       	OUT 41H
+1199   054C             ; 269: Return
+1200   054C C9          	RET
+1201   054D             ; End of user code
+1202   054D 76          	HLT
+1203   054E             ; Integer Comparison Routine
+1204   054E CD 74 05    C001:	CALL C007
+1205   0551 C8          	RZ
+1206   0552 2B          	DCX H
+1207   0553 C9          	RET
+1208   0554 CD 74 05    C002:	CALL C007
+1209   0557 C0          	RNZ
+1210   0558 2B          	DCX H
+1211   0559 C9          	RET
+1212   055A EB          C003:	XCHG
+1213   055B CD 74 05    	CALL C007
+1214   055E D8          	RC
+1215   055F 2B          	DCX H
+1216   0560 C9          	RET
+1217   0561 CD 74 05    C004:	CALL C007
+1218   0564 D0          	RNC
+1219   0565 2B          	DCX H
+1220   0566 C9          	RET
+1221   0567 CD 74 05    C005:	CALL C007
+1222   056A D8          	RC
+1223   056B 2B          	DCX H
+1224   056C C9          	RET
+1225   056D CD 74 05    C006:	CALL C007
+1226   0570 C8          	RZ
+1227   0571 D8          	RC
+1228   0572 2B          	DCX H
+1229   0573 C9          	RET
+1230   0574 7B          C007:	MOV A,E
+1231   0575 95          	SUB L
+1232   0576 5F          	MOV E,A
+1233   0577 7A          	MOV A,D
+1234   0578 9C          	SBB H
+1235   0579 21 01 00    	LXI H,0001H
+1236   057C FA 81 05    	JM C008
+1237   057F B3          	ORA E
+1238   0580 C9          	RET
+1239   0581 B3          C008:	ORA E
+1240   0582 37          	STC
+1241   0583 C9          	RET
+1242   0584             ; End of listing
+1243   0584             	.END
+Number of errors = 0
